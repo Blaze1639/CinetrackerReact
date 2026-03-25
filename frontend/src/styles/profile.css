@@ -1,0 +1,237 @@
+/* ============================================
+   PROFILE
+   ============================================ */
+
+.profile-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 24px 60px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #999;
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 20px;
+  transition: color 0.2s;
+}
+.back-link:hover { color: #fff; }
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.profile-header h1 { margin: 0 0 8px; }
+.profile-header p { color: #999; font-size: 15px; }
+
+/* Section */
+.profile-section {
+  background: #1f1f1f;
+  border-radius: 12px;
+  padding: 26px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #e50914;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #2a2a2a;
+  letter-spacing: 0.3px;
+}
+
+/* Avatar */
+.avatar-section {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 26px;
+}
+
+.avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e50914, #8b0000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  color: white;
+  font-weight: bold;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(229,9,20,0.4);
+}
+
+.avatar-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Quick stats */
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.stat-box {
+  background: #2c2c2c;
+  border-radius: 10px;
+  padding: 18px 12px;
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 34px;
+  font-weight: 800;
+  color: #e50914;
+  font-family: 'Bebas Neue', sans-serif;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Form inside profile */
+.form-group { margin-bottom: 18px; }
+
+.form-label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 14px;
+  color: #ccc;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 14px;
+  background: #2c2c2c;
+  border: 1px solid #3a3a3a;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 15px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #e50914;
+}
+
+textarea.form-input {
+  resize: vertical;
+  min-height: 100px;
+}
+
+select.form-input { cursor: pointer; }
+
+/* Buttons */
+.btn-primary {
+  background: #e50914;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: #b00610; }
+
+.btn-danger {
+  background: transparent;
+  color: #e74c3c;
+  border: 1.5px solid #e74c3c;
+  padding: 12px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.btn-danger:hover { background: #e74c3c; color: white; }
+
+/* Alert */
+.alert {
+  padding: 14px 18px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.alert-success {
+  background: rgba(46,204,113,0.12);
+  border: 1px solid #2ecc71;
+  color: #2ecc71;
+}
+
+.alert-error {
+  background: rgba(231,76,60,0.12);
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+}
+
+/* Danger zone */
+.danger-zone {
+  background: rgba(229,9,20,0.05);
+  border: 1px solid rgba(229,9,20,0.3);
+  border-radius: 10px;
+  padding: 22px;
+}
+
+.danger-zone h4 { color: #e50914; margin-bottom: 10px; font-size: 16px; }
+.danger-zone p  { color: #999; font-size: 14px; margin-bottom: 10px; }
+
+.danger-zone ul {
+  margin: 12px 0 16px;
+  padding-left: 20px;
+}
+
+.danger-zone ul li {
+  color: #999;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+/* Notification card inside admin panel */
+.notif-card {
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 1px solid #333;
+}
+
+@media (max-width: 600px) {
+  .profile-container { padding: 16px 16px 40px; }
+  .quick-stats { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat-box { padding: 12px 8px; }
+  .stat-number { font-size: 26px; }
+  .avatar { width: 68px; height: 68px; font-size: 28px; }
+  .avatar-name { font-size: 18px; }
+  .avatar-section { gap: 14px; }
+}

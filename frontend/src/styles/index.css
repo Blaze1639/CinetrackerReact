@@ -1,0 +1,66 @@
+/* ============================================
+   MEDIA LIST (index)
+   ============================================ */
+
+/* Filter panel */
+.filter-container {
+  background: #1f1f1f;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 0 auto 28px;
+  max-width: 760px;
+  width: calc(100% - 48px);
+}
+
+.filter-container label {
+  display: block;
+  color: #ccc;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-container select,
+.filter-container input[type="text"] {
+  width: 100%;
+  margin-bottom: 16px;
+  background: #2c2c2c;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.filter-container select:last-child,
+.filter-container input:last-child { margin-bottom: 0; }
+
+/* Card tweaks for index */
+.card {
+  min-height: 0;
+}
+
+.card .btn-edit {
+  background-color: #3498db;
+  color: white;
+  flex: 1;
+}
+
+.card .btn-edit:hover { background-color: #2980b9; }
+
+.card .btn-delete {
+  background-color: #e74c3c;
+  color: white;
+  flex: 1;
+}
+
+.card .btn-delete:hover { background-color: #c0392b; }
+
+@media (max-width: 480px) {
+  .filter-container {
+    width: calc(100% - 24px);
+    padding: 16px;
+  }
+}

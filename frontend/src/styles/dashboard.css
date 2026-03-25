@@ -1,0 +1,220 @@
+/* ============================================
+   DASHBOARD + ACCUEIL
+   ============================================ */
+
+.accueil-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+}
+
+/* Actualités */
+.actualites-banner {
+  margin: 32px 0;
+}
+
+.actualites-banner h2 {
+  color: #fff;
+  font-size: clamp(20px, 3vw, 26px);
+  margin-bottom: 18px;
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 2px;
+}
+
+.actualites-carousel {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scroll-behavior: smooth;
+}
+
+.actualites-carousel::-webkit-scrollbar { height: 6px; }
+.actualites-carousel::-webkit-scrollbar-track { background: #222; border-radius: 6px; }
+.actualites-carousel::-webkit-scrollbar-thumb { background: #e50914; border-radius: 6px; }
+
+.actu-card {
+  background: #1a1a1a;
+  border: 2px solid #e50914;
+  border-radius: 12px;
+  padding: 20px 22px;
+  min-width: 300px;
+  max-width: 360px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.actu-card h3 {
+  color: #e50914;
+  font-size: 17px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.actu-card p {
+  color: #ccc;
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.actu-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(229,9,20,0.3);
+  padding-top: 12px;
+}
+
+.actu-author { color: #e50914; font-size: 13px; font-style: italic; }
+.actu-date   { color: #777; font-size: 12px; }
+
+/* Delete actu button */
+.actu-delete-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(229,9,20,0.15);
+  border: 1px solid #e50914;
+  color: #e50914;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+.actu-delete-btn:hover { background: #e50914; color: white; }
+
+/* Dashboard section */
+.dashboard {
+  background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+  border-radius: 14px;
+  border-left: 5px solid #e50914;
+  padding: 32px 28px;
+  margin-bottom: 40px;
+}
+
+.dashboard h2 {
+  text-align: center;
+  color: #fff;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 30px;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.dashboard h3 {
+  color: #fff;
+  text-align: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.year-select-wrap {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.year-select-wrap label {
+  color: #ccc;
+  margin-right: 10px;
+  font-size: 15px;
+  display: inline;
+}
+
+.year-select-wrap select {
+  display: inline;
+  width: auto;
+  padding: 8px 14px;
+  background: #2c2c2c;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.chart-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  height: 380px;
+}
+
+/* Summary cards */
+.summary {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.card_media {
+  background: #111;
+  border-radius: 10px;
+  padding: 22px 30px;
+  text-align: center;
+  min-width: 150px;
+  border: 1px solid #2a2a2a;
+}
+
+.card_media h3 {
+  color: #e50914;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.card_media strong {
+  font-size: 38px;
+  font-family: 'Bebas Neue', sans-serif;
+  color: #fff;
+}
+
+/* Leaderboard */
+.leaderboard {
+  background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+  border-radius: 14px;
+  border-left: 5px solid #3498db;
+  padding: 32px 28px;
+}
+
+.leaderboard h2 {
+  color: #e50914;
+  text-align: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+}
+
+.leaderboard-section {
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 28px;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.leaderboard-section h3 {
+  color: #ecf0f1;
+  text-align: center;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+.card-info { text-align: center; }
+.card-info .username { color: #3498db; font-weight: bold; font-size: 14px; margin: 4px 0; }
+.card-info .date     { color: #777; font-size: 13px; }
+
+@media (max-width: 768px) {
+  .accueil-main { padding: 0 12px 40px; }
+  .dashboard { padding: 20px 16px; }
+  .leaderboard { padding: 20px 16px; }
+  .chart-wrap { height: 260px; }
+  .card_media { min-width: 110px; padding: 16px 18px; }
+  .card_media strong { font-size: 30px; }
+}

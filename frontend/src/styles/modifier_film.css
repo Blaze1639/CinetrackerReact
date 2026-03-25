@@ -1,0 +1,43 @@
+/* ============================================
+   MODIFIER FILM / A VOIR
+   ============================================ */
+
+.form-container {
+  max-width: 560px;
+  margin: 40px auto;
+  background: #1f1f1f;
+  padding: 36px;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  width: calc(100% - 48px);
+}
+
+.form-container h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  text-align: center;
+  color: #e50914;
+  margin-bottom: 28px;
+}
+
+.form-container form {
+  background: none;
+  padding: 0;
+  box-shadow: none;
+  max-width: none;
+}
+
+.form-container a {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  color: #888;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.form-container a:hover { color: #fff; }
+
+@media (max-width: 480px) {
+  .form-container { width: calc(100% - 24px); padding: 22px 16px; }
+}

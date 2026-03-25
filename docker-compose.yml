@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+
+  # ─── Base de données MySQL ───────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: cinetrack_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: media_tracker
+      MYSQL_USER: cinetrack
+      MYSQL_PASSWORD: cinetrack
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - cinetrack_net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Backend PHP + Apache ────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cinetrack_backend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./backend:/var/www/html
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_NAME: media_tracker
+      DB_PORT: 3306
+      DB_USER: cinetrack
+      DB_PASS: cinetrack
+    networks:
+      - cinetrack_net
+
+  # ─── Frontend React + Vite ───────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cinetrack_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_TMDB_KEY=22eef7e96585baa751a8384b942e4470
+    depends_on:
+      - backend
+    networks:
+      - cinetrack_net
+
+volumes:
+  db_data:
+
+networks:
+  cinetrack_net:
+    driver: bridge

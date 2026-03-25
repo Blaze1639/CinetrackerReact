@@ -1,0 +1,111 @@
+/* ============================================
+   MODAL NOTATION
+   ============================================ */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+
+.rating-container {
+  background: #1f1f1f;
+  padding: 36px 32px;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid #333;
+}
+
+.rating-container h1 {
+  color: #e50914;
+  font-size: 26px;
+  margin-bottom: 8px;
+}
+
+.media-title {
+  font-size: 18px;
+  color: #ccc;
+  margin-bottom: 24px;
+  font-weight: 400;
+}
+
+.stars {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.star {
+  font-size: 48px;
+  cursor: pointer;
+  color: #444;
+  transition: all 0.15s ease;
+  user-select: none;
+  line-height: 1;
+}
+
+.star:hover, .star.active {
+  color: #FFD700;
+  transform: scale(1.15);
+}
+
+.selected-rating {
+  font-size: 17px;
+  color: #FFD700;
+  margin-bottom: 16px;
+  min-height: 22px;
+}
+
+.rating-container textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #3a3a3a;
+  background: #2c2c2c;
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  margin-top: 8px;
+}
+
+.rating-container button {
+  width: 100%;
+  padding: 13px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.rating-container button:first-of-type {
+  background: #e50914;
+  color: white;
+}
+
+.rating-container button:first-of-type:hover { background: #b00610; }
+.rating-container button:first-of-type:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.cancel-btn {
+  background: #333 !important;
+  color: #ccc !important;
+}
+.cancel-btn:hover { background: #444 !important; }
+
+@media (max-width: 480px) {
+  .rating-container { padding: 24px 18px; }
+  .star { font-size: 38px; }
+}

@@ -1,0 +1,70 @@
+@import './common.css';
+
+/* ============================================
+   STYLES SPÉCIFIQUES - Déplacement
+   ============================================ */
+
+/* La plupart des styles sont dans common.css */
+
+/* Styles spécifiques pour cette page */
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+}
+
+.message-box {
+	background-color: #1f1f1f;
+	padding: 30px 35px;
+	border-radius: 12px;
+	box-shadow: 0 6px 12px rgba(0,0,0,0.6);
+	max-width: 420px;
+	text-align: center;
+	animation: fadeInScale 0.6s ease forwards;
+	margin: auto;
+}
+
+.message-box h1 {
+	font-size: 24px;
+	margin-bottom: 12px;
+	color: #e50914;
+}
+
+.message-box p {
+	font-size: 16px;
+	color: #cccccc;
+	margin-bottom: 20px;
+}
+
+.icon {
+	font-size: 48px;
+	margin-bottom: 15px;
+}
+
+.progress-bar-bg {
+	background-color: #2c2c2c;
+	height: 6px;
+	border-radius: 6px;
+	overflow: hidden;
+	width: 100%;
+	max-width: 300px;
+	margin: 0 auto;
+}
+
+.progress-bar-fill {
+	background-color: #e50914;
+	height: 100%;
+	width: 0;
+	animation: progressFill 2.5s linear forwards;
+}
+
+@keyframes progressFill {
+	to { width: 100%; }
+}
+
+@keyframes fadeInScale {
+	from { opacity: 0; transform: scale(0.95); }
+	to { opacity: 1; transform: scale(1); }
+}
+
