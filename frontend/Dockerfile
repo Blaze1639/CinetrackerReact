@@ -1,12 +1,11 @@
-FROM node:20-alpine
+FROM php:8.2-cli
+
+RUN docker-php-ext-install pdo pdo_mysql mysqli
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install
-
 COPY . .
 
-EXPOSE 5173
+EXPOSE 80
 
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+CMD ["php", "-S", "0.0.0.0:80", "-t", "."]
