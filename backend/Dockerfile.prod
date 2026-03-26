@@ -1,18 +1,21 @@
 FROM php:8.2-apache
 
-# 1. Extensions PHP
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 
-# 2. FIX RADICAL POUR L'ERREUR MPM (AH00534)
-# On supprime physiquement les liens vers les autres MPM pour éviter tout conflit
-RUN rm -f /etc/apache2/mods-enabled/mpm_event.load \
-    && rm -f /etc/apache2/mods-enabled/mpm_worker.load \
-    && ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load || true
-
-# 3. Activer mod_rewrite
+# On active mod_rewrite
 RUN a2enmod rewrite
 
-# 4. Config Apache (Correction des droits)
+
+# À mettre après l'installation des extensions PHP
+RUN rm -f /etc/apache2/mods-enabled/mpm_*.load && \
+    ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load
+    
+# ON NETTOIE TOUT LE DOSSIER DES MODULES ACTIVÉS 
+# Pour ne laisser que ce qui est strictement nécessaire
+RUN rm -rf /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf
+RUN ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load
+
+# Config Apache
 RUN echo '<Directory /var/www/html>\n\
     Options Indexes FollowSymLinks\n\
     AllowOverride All\n\
@@ -20,14 +23,10 @@ RUN echo '<Directory /var/www/html>\n\
 </Directory>' > /etc/apache2/conf-available/override.conf \
     && a2enconf override
 
-# 5. Copier les fichiers PHP (On s'assure d'être dans le bon dossier)
 COPY . /var/www/html/
-
-# 6. Permissions
 RUN chown -R www-data:www-data /var/www/html
 
-# 7. Forcer le port Railway (Optionnel mais recommandé)
-ENV PORT=80
 EXPOSE 80
 
-CMD ["apache2-foreground"]
+# On force le lancement en mode foreground propre
+ENTRYPOINT ["apache2-foreground"]
