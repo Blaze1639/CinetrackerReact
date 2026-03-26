@@ -11,7 +11,7 @@ const BASE = import.meta.env.VITE_API_URL || ''
 export function createApi(apiFetch) {
   const post = (url, body) => apiFetch(BASE + url, {
     method: 'POST',
-    body: JSON.stringify(body),
+    body: JSON.stringify(body),VITE_API_KEY
   }).then(r => r.json())
 
   const get = (url) => apiFetch(BASE + url).then(r => r.json())
