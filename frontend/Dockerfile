@@ -1,11 +1,19 @@
-FROM php:8.2-cli
-
-RUN docker-php-ext-install pdo pdo_mysql mysqli
+# STEP 1 : build React
+FROM node:18 AS build
 
 WORKDIR /app
 
+COPY package*.json ./
+RUN npm install
+
 COPY . .
+RUN npm run build
+
+# STEP 2 : serveur Nginx
+FROM nginx:alpine
+
+COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
-CMD ["php", "-S", "0.0.0.0:80", "-t", "."]
+CMD ["nginx", "-g", "daemon off;"]
