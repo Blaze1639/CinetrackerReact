@@ -14,6 +14,9 @@ export function createApi(apiFetch) {
   body: JSON.stringify(body)
   }).then(r => r.json())
 
+  console.log("ENV:", import.meta.env);
+console.log("API:", import.meta.env.VITE_API_URL);
+
   const get = (url) => apiFetch(BASE + url).then(r => r.json())
 
   return {
