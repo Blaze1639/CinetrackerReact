@@ -1,17 +1,17 @@
 FROM php:8.2-apache
 
-# Extensions PHP
+# 1. Extensions PHP
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 
-# Activer mod_rewrite
-RUN a2enmod rewrite
-
+# 2. CONFIGURATION MPM (La solution à ton erreur)
+# On désactive mpm_event et on force mpm_prefork AVANT tout le reste
 RUN a2dismod mpm_event || true && \
     a2enmod mpm_prefork || true
-# Redémarre Apache pour appliquer
-RUN service apache2 restart || true
 
-# Config Apache
+# 3. Activer mod_rewrite
+RUN a2enmod rewrite
+
+# 4. Config Apache (Correction des droits)
 RUN echo '<Directory /var/www/html>\n\
     Options Indexes FollowSymLinks\n\
     AllowOverride All\n\
@@ -19,12 +19,13 @@ RUN echo '<Directory /var/www/html>\n\
 </Directory>' > /etc/apache2/conf-available/override.conf \
     && a2enconf override
 
-# Copier les fichiers PHP
+# 5. Copier les fichiers PHP
 COPY . /var/www/html/
 
-# Permissions
+# 6. Permissions
 RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
 
+# On ne fait pas de "service restart", Apache se lancera proprement ici
 CMD ["apache2-foreground"]
