@@ -1,25 +1,11 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 
-# Active mod_rewrite
-RUN a2enmod rewrite
+WORKDIR /app
 
-# 🔥 FIX MPM propre
-RUN a2dismod mpm_event mpm_worker || true && \
-    a2enmod mpm_prefork
-
-# Config Apache
-RUN echo '<Directory /var/www/html>\n\
-    Options Indexes FollowSymLinks\n\
-    AllowOverride All\n\
-    Require all granted\n\
-</Directory>' > /etc/apache2/conf-available/override.conf \
-    && a2enconf override
-
-COPY . /var/www/html/
-RUN chown -R www-data:www-data /var/www/html
+COPY . .
 
 EXPOSE 80
 
-ENTRYPOINT ["apache2-foreground"]
+CMD ["php", "-S", "0.0.0.0:80", "-t", "."]
