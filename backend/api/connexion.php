@@ -2,40 +2,42 @@
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/_helpers.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_error('Méthode non supportée', 405);
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
 
-$body = get_body();
-$email     = $body['email'] ?? '';
-$motdepasse = $_POST['motdepasse'] ?? '';
+// 🔥 preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
-// Récupérer le mot de passe brut AVANT sanitisation (hash bcrypt)
-$raw = json_decode(file_get_contents('php://input'), true) ?? [];
-$motdepasse = $raw['motdepasse'] ?? '';
-$email = sanitize($raw['email'] ?? '');
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    json_error('Méthode non supportée', 405);
+}
 
-if (!$email || !$motdepasse) json_error('Champs manquants');
+// ✅ récupération JSON propre
+$body = json_decode(file_get_contents('php://input'), true);
+
+$email = sanitize($body['email'] ?? '');
+$motdepasse = $body['motdepasse'] ?? '';
+
+if (!$email || !$motdepasse) {
+    json_error('Champs manquants');
+}
 
 $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
 $stmt->execute([$email]);
 $user = $stmt->fetch();
 
 if ($user && password_verify($motdepasse, $user['password'])) {
-    // Regénérer l'ID de session pour éviter la fixation de session
-    session_regenerate_id(true);
-
-    $_SESSION['user_id']  = $user['id'];
-    $_SESSION['username'] = $user['username'];
-    $_SESSION['pseudo']   = $user['username'];
-    $_SESSION['role']     = $user['role'];
-
-    $csrf_token = generate_csrf_token();
 
     json_success([
-        'user_id'    => $user['id'],
-        'username'   => $user['username'],
-        'role'       => $user['role'],
-        'csrf_token' => $csrf_token,
+        'user_id'  => $user['id'],
+        'username' => $user['username'],
+        'role'     => $user['role']
     ]);
+
 } else {
     json_error('Email ou mot de passe incorrect', 401);
 }
