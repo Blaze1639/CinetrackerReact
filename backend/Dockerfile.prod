@@ -2,18 +2,12 @@ FROM php:8.2-apache
 
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 
-# On active mod_rewrite
+# Active mod_rewrite
 RUN a2enmod rewrite
 
-
-# À mettre après l'installation des extensions PHP
-RUN rm -f /etc/apache2/mods-enabled/mpm_*.load && \
-    ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load
-    
-# ON NETTOIE TOUT LE DOSSIER DES MODULES ACTIVÉS 
-# Pour ne laisser que ce qui est strictement nécessaire
-RUN rm -rf /etc/apache2/mods-enabled/mpm_*.load /etc/apache2/mods-enabled/mpm_*.conf
-RUN ln -s /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load
+# 🔥 FIX MPM propre
+RUN a2dismod mpm_event mpm_worker || true && \
+    a2enmod mpm_prefork
 
 # Config Apache
 RUN echo '<Directory /var/www/html>\n\
@@ -28,5 +22,4 @@ RUN chown -R www-data:www-data /var/www/html
 
 EXPOSE 80
 
-# On force le lancement en mode foreground propre
 ENTRYPOINT ["apache2-foreground"]
