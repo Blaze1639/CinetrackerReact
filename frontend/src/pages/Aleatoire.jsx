@@ -55,7 +55,7 @@ export default function Aleatoire() {
     <>
       <Navbar />
       <div className="aleatoire-wrapper">
-        <h1>🎲 Découvrez un film/série aléatoire</h1>
+        <h1> Découvrez un film/série aléatoire</h1>
         <div className="controls">
           <div className="control-row">
             <label>Type :</label>

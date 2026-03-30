@@ -99,9 +99,11 @@
 
 .result .card {
   background: #1a1a1a;
+  display: flex;
+  align-items: center;
   border-radius: 14px;
   padding: 20px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 24px #00000080;
 }
 
 .result .card-header { margin-bottom: 12px; }
