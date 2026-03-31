@@ -4,6 +4,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+ARG VITE_API_URL
+ARG VITE_TMDB_KEY
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_TMDB_KEY=$VITE_TMDB_KEY
 RUN npm run build
 
 # STEP 2 : serveur Nginx
