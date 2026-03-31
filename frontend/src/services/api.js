@@ -4,7 +4,7 @@
 // En prod : VITE_API_URL pointe vers l'URL Railway du backend
 // ─────────────────────────────────────────────────────────────
 
-const BASE = import.meta.env.VITE_API_URL || ''
+const BASE = import.meta.env.VITE_API_URL || 'https://cinetrack-backend-di8b.onrender.com'; 
 // BASE = '' en dev (proxy Vite)
 // BASE = 'https://cinetrack-backend.railway.app' en prod
 
