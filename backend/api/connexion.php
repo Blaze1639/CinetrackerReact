@@ -30,6 +30,20 @@ if ($user && password_verify($motdepasse, $user['password'])) {
 
     $csrf_token = generate_csrf_token();
 
+    // Force le cookie de session avec les bons paramètres
+    $session_params = session_get_cookie_params();
+    setcookie(
+        session_name(),
+        session_id(),
+        [
+            'expires'  => 0,
+            'path'     => '/',
+            'secure'   => true,
+            'httponly' => true,
+            'samesite' => 'None',
+        ]
+    );
+
     json_success([
         'user_id'    => $user['id'],
         'username'   => $user['username'],
