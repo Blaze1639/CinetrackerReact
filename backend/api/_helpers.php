@@ -16,36 +16,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ── CORS ─────────────────────────────────────────────────────
-// Accepte localhost en dev ET le domaine Railway en prod
-$allowed_origins = [
-    'http://localhost:5173',                      // dev local
-    'http://localhost:3000',
-];
-
-// Ajouter le domaine frontend Railway si défini
-if (!empty(getenv('FRONTEND_URL'))) {
-    $allowed_origins[] = rtrim(getenv('FRONTEND_URL'), '/');
-}
-
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if (in_array($origin, $allowed_origins)) {
-    header("Access-Control-Allow-Origin: $origin");
-} else {
-    header("Access-Control-Allow-Origin: " . ($allowed_origins[0]));
-}
-
-header('Content-Type: application/json');
-header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, X-Requested-With, X-CSRF-Token');
-header('Access-Control-Allow-Credentials: true');
-
 // Sécurité HTTP
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('X-XSS-Protection: 1; mode=block');
-
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit; }
 
 // ── CSRF ─────────────────────────────────────────────────────
 function generate_csrf_token(): string {
