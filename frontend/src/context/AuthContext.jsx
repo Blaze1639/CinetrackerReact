@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef } from 'react'
 
+const BASE = 'https://cinetrack-backend-di8b.onrender.com'
+
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
@@ -8,10 +10,9 @@ export function AuthProvider({ children }) {
   const csrfToken = useRef('')
 
   useEffect(() => {
-    fetch('/api/session.php', { credentials: 'include' })
+    fetch(BASE + '/api/session.php', { credentials: 'include' })
       .then(r => r.json())
       .then(data => {
-        // Stocker le token CSRF dès le démarrage
         if (data.csrf_token) csrfToken.current = data.csrf_token
         if (data.user_id) setUser(data)
       })
@@ -20,20 +21,18 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = (userData) => {
-    // Mettre à jour le token CSRF après connexion
     if (userData.csrf_token) csrfToken.current = userData.csrf_token
     setUser(userData)
   }
 
   const logout = () => {
-    fetch('/api/deconnexion.php', { credentials: 'include' })
+    fetch(BASE + '/api/deconnexion.php', { credentials: 'include' })
       .finally(() => {
         csrfToken.current = ''
         setUser(null)
       })
   }
 
-  // Helper pour faire des requêtes POST sécurisées avec le token CSRF
   const apiFetch = (url, options = {}) => {
     return fetch(url, {
       ...options,
