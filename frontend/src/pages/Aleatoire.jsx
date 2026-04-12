@@ -88,9 +88,9 @@ export default function Aleatoire() {
           </div>
         </div>
         <button className={`random-btn${loading?' loading':''}`} onClick={() => fetchRandom()} disabled={loading}>
-          {loading ? '⏳ Chargement...' : 'Choisir un aléatoire'}
+          {loading ? ' Chargement...' : 'Choisir un aléatoire'}
         </button>
-        {error && <div className="error"><p>⚠️ {error}</p></div>}
+        {error && <div className="error"><p> {error}</p></div>}
         {media && !loading && (
           <div className="result">
             <div className="card">
