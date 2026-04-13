@@ -1,12 +1,10 @@
 // ─────────────────────────────────────────────────────────────
 // Service API centralisé avec protection CSRF
 // En dev  : les appels /api/... sont proxifiés vers le backend
-// En prod : VITE_API_URL pointe vers l'URL Railway du backend
 // ─────────────────────────────────────────────────────────────
 
 const BASE = import.meta.env.VITE_API_URL || 'https://cinetrack-backend-di8b.onrender.com'; 
 // BASE = '' en dev (proxy Vite)
-// BASE = 'https://cinetrack-backend.railway.app' en prod
 
 export function createApi(apiFetch) {
   const post = (url, body) => apiFetch(BASE + url, {
