@@ -1,5 +1,9 @@
 {
   "dependencies": {
     "serve": "^14.2.6"
+  },
+  "devDependencies": {
+    "expect": "^30.3.0",
+    "jest-watcher": "^30.3.0"
   }
 }
