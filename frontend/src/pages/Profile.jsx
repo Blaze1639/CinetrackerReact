@@ -162,7 +162,7 @@ export default function Profile() {
               <label className="form-label">Votre message</label>
               <textarea className="form-input" rows="5" value={suggestion.message} onChange={e=>setSuggestion(p=>({...p,message:e.target.value}))} placeholder="Décrivez votre suggestion ou votre problème..." required />
             </div>
-            <button type="submit" className="btn-primary">📤 Envoyer aux administrateurs</button>
+            <button type="submit" className="btn-primary"> Envoyer aux administrateurs</button>
           </form>
         </div>
 
