@@ -105,27 +105,14 @@ export default function Aleatoire() {
           </div>
           <div className="control-row">
             <label>Durée :</label>
-           
+            <select value={filters.duration} onChange={e => hf('duration', e.target.value)}>
               <option value="">Toutes les durées</option>
-              if (filters.type === 'tous') {
-                <select value={filters.duration} onChange={e => hf('duration', e.target.value)}>
-                  <option value="gt20">Plus de 20 min</option>
-                  <option value="gt30">Plus de 30 min</option>
-                  <option value="lt90">Moins de 90 min</option>
-                  <option value="90to120">90 - 120 min</option>
-                  <option value="gt120">Plus de 120 min</option>
-              </select>
-              } else if (filters.type === 'film') {
-                <select value={filters.duration} onChange={e => hf('duration', e.target.value)}>
-                  <option value="90to120">90 - 120 min</option>
-                  <option value="gt120">Plus de 120 min</option>
-              </select>
-              } else {
-                <select value={filters.duration} onChange={e => hf('duration', e.target.value)}>
-                  <option value="gt20">Plus de 20 min</option>
-                  <option value="gt30">Plus de 30 min</option>
-                </select>
-              }
+              <option value="gt20">Plus de 20 min</option>
+              <option value="gt30">Plus de 30 min</option>
+              <option value="lt90">Moins de 90 min</option>
+              <option value="90to120">90 - 120 min</option>
+              <option value="gt120">Plus de 120 min</option>
+            </select>
           </div>
         </div>
         <button className={`random-btn${loading?' loading':''}`} onClick={() => fetchRandom()} disabled={loading}>
