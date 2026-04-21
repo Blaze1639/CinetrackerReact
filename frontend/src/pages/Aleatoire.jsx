@@ -31,10 +31,13 @@ export default function Aleatoire() {
       const page = Math.floor(Math.random() * 50) + 1
       let isMovie = type === 'série' ? false : type === 'film' ? true : Math.random() > 0.5
       let ep = isMovie ? `https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&page=${page}` : `https://api.themoviedb.org/3/discover/tv?sort_by=popularity.desc&page=${page}`
+      
       if (f.genre) ep += `&with_genres=${f.genre}`
       if (f.year) ep += f.year === '2010' ? '&primary_release_date.lte=2010-12-31' : `&primary_release_year=${f.year}`
       if (f.duration && isMovie) {
         if (f.duration === 'lt90') ep += '&with_runtime.lte=89'
+        else if (f.duration === 'gt20') ep += '&with_runtime.gte=20'
+        else if (f.duration === 'gt30') ep += '&with_runtime.gte=30'
         else if (f.duration === '90to120') ep += '&with_runtime.gte=90&with_runtime.lte=120'
         else if (f.duration === 'gt120') ep += '&with_runtime.gte=121'
       }
@@ -104,6 +107,8 @@ export default function Aleatoire() {
             <label>Durée :</label>
             <select value={filters.duration} onChange={e => hf('duration', e.target.value)}>
               <option value="">Toutes les durées</option>
+
+              <option value="gt30">Plus de 30 min</option>
               <option value="lt90">Moins de 90 min</option>
               <option value="90to120">90 - 120 min</option>
               <option value="gt120">Plus de 120 min</option>
