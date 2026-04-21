@@ -1,6 +1,7 @@
 import '../styles/aleatoire.css'
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
+import { useApi } from '../services/api'
 
 const API_KEY = import.meta.env.VITE_TMDB_KEY || '22eef7e96585baa751a8384b942e4470'
 const GENRES = [
@@ -18,6 +19,9 @@ export default function Aleatoire() {
   const [media, setMedia] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [addMsg, setAddMsg] = useState(null)
+  const [addLoading, setAddLoading] = useState(false)
+  const api = useApi()
 
   const fetchRandom = async (f = filters) => {
     setLoading(true); setError(null); setMedia(null)
@@ -50,6 +54,25 @@ export default function Aleatoire() {
   useEffect(() => { fetchRandom() }, [])
 
   const hf = (k, v) => { const nf = {...filters,[k]:v}; setFilters(nf); fetchRandom(nf) }
+
+  const handleAddToWatchlist = async () => {
+    if (!media) return
+    setAddLoading(true)
+    setAddMsg(null)
+    const body = {
+      title: media.title,
+      image_url: media.poster_path ? `https://image.tmdb.org/t/p/w500${media.poster_path}` : '',
+      type_media: media.is_movie ? 'film' : 'série',
+    }
+    try {
+      const res = await api.watchlist.add(body)
+      if (res.success) setAddMsg('Ajouté à votre liste à voir !')
+      else setAddMsg(res.message || "Erreur lors de l'ajout.")
+    } catch (e) {
+      setAddMsg("Erreur lors de l'ajout : " + e.message)
+    }
+    setAddLoading(false)
+  }
 
   return (
     <>
@@ -104,6 +127,10 @@ export default function Aleatoire() {
                 {!media.is_movie && media.number_of_seasons && <div className="media-seasons"><strong>Saisons/Épisodes :</strong> {media.number_of_seasons} saison(s) — {media.number_of_episodes} épisode(s)</div>}
               </div>
               {media.overview && <div className="comment-section"><strong>Synopsis</strong><p className="comment-text">{media.overview}</p></div>}
+              <button className="random-btn" style={{marginTop:16}} onClick={handleAddToWatchlist} disabled={addLoading}>
+                {addLoading ? 'Ajout en cours...' : 'Ajouter à ma liste à voir'}
+              </button>
+              {addMsg && <div className="add-msg" style={{marginTop:8, color:addMsg.startsWith('Ajouté')?'green':'red'}}>{addMsg}</div>}
             </div>
           </div>
         )}
