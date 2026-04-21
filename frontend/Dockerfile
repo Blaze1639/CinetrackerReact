@@ -2,7 +2,8 @@
 FROM node:18 AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm install --platform=linux --arch=x64
+RUN npm rebuild
 COPY . .
 RUN npm run build
 
