@@ -1,9 +1,8 @@
 # STEP 1 : build React
 FROM node:18 AS build
 WORKDIR /app
-COPY package*.json ./
-RUN npm install --platform=linux --arch=x64
-RUN npm rebuild
+COPY package.json ./
+RUN npm install
 COPY . .
 RUN npm run build
 
