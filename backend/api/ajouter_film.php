@@ -10,7 +10,7 @@ $title = trim($body['title'] ?? '');
 $rating = (float)($body['rating'] ?? 0);
 $image_url = $body['image_url'] ?? null;
 $type_media = ($body['type_media'] === 'série') ? 'série' : 'film';
-$commentaire = trim($body['commentaire'] ?? '');
+$commentaire = trim($body['commentaire'] ?? ''); // Pas de sanitize ici, on le fera à l'affichage
 if (!$title) json_error('Le titre est requis');
 if ($rating < 1 || $rating > 5) json_error('La note doit être entre 1 et 5');
 $stmt = $pdo->prepare("SELECT COUNT(*) FROM media WHERE LOWER(title)=LOWER(?) AND type_media=? AND user_id=?");

@@ -94,7 +94,7 @@ export default function MediaList() {
               {m.commentaire && (
                 <div className="comment-section">
                   <strong>Commentaire :</strong>
-                  <p className="comment-text">{m.commentaire}</p>
+                  <p className="comment-text">{String(m.commentaire).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
                 </div>
               )}
               <div className="card-actions">

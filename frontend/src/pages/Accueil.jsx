@@ -78,7 +78,7 @@ export default function Accueil() {
         {item.commentaire && (
           <div className="comment-section">
             <strong>Commentaire :</strong>
-            <p className="comment-text">{item.commentaire}</p>
+            <p className="comment-text">{String(item.commentaire).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
           </div>
         )}
         <div className="card-info">
