@@ -2,7 +2,6 @@ import '../styles/aleatoire.css'
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import { useApi } from '../services/api'
-import { useAuth } from '../context/AuthContext'
 
 const API_KEY = import.meta.env.VITE_TMDB_KEY || '22eef7e96585baa751a8384b942e4470'
 const GENRES = [
@@ -15,6 +14,7 @@ const GENRES = [
 ]
 const YEARS = [{value:'',label:'Toutes les années'},...['2024','2023','2022','2021','2020','2019','2018','2017','2016','2015'].map(y=>({value:y,label:y})),{value:'2010',label:'2010 et avant'}]
 
+export default function Aleatoire() {
   const [filters, setFilters] = useState({type:'tous',genre:'',year:'',duration:''})
   const [media, setMedia] = useState(null)
   const [loading, setLoading] = useState(false)
@@ -22,7 +22,6 @@ const YEARS = [{value:'',label:'Toutes les années'},...['2024','2023','2022','2
   const [addMsg, setAddMsg] = useState(null)
   const [addLoading, setAddLoading] = useState(false)
   const api = useApi()
-  const { csrfToken } = useAuth()
 
   const fetchRandom = async (f = filters) => {
     setLoading(true); setError(null); setMedia(null)
@@ -63,13 +62,6 @@ const YEARS = [{value:'',label:'Toutes les années'},...['2024','2023','2022','2
     if (!media) return
     setAddLoading(true)
     setAddMsg(null)
-    // Force refresh du token CSRF si vide
-    if (!csrfToken.current) {
-      await fetch((import.meta.env.VITE_API_URL || 'https://cinetrack-backend-di8b.onrender.com') + '/api/session.php', { credentials: 'include' })
-        .then(r => r.json())
-        .then(data => { if (data.csrf_token) csrfToken.current = data.csrf_token })
-        .catch(() => {})
-    }
     const body = {
       title: media.title,
       image_url: media.poster_path ? `https://image.tmdb.org/t/p/w500${media.poster_path}` : '',
@@ -149,5 +141,5 @@ const YEARS = [{value:'',label:'Toutes les années'},...['2024','2023','2022','2
         )}
       </div>
     </>
-  ) 
-  
+  )
+}
