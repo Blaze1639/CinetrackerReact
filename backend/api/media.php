@@ -3,6 +3,8 @@ require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/_helpers.php';
 require_auth();
 $user_id = $_SESSION['user_id'];
+
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $filtre = $_GET['type'] ?? '';
 $recherche = trim($_GET['search'] ?? '');
 $year = $_GET['year'] ?? '';
@@ -10,6 +12,14 @@ $rating = $_GET['rating'] ?? '';
 $page = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 12;
 $offset = ($page - 1) * $perPage;
+
+if ($id) {
+	// Si un id est fourni, on ne retourne que ce média
+	$stmt = $pdo->prepare("SELECT * FROM media WHERE id = :id AND user_id = :user_id LIMIT 1");
+	$stmt->execute([':id' => $id, ':user_id' => $user_id]);
+	$media = $stmt->fetchAll();
+	json_success(['media' => $media, 'total' => count($media), 'pages' => 1, 'page' => 1]);
+}
 
 $where = "WHERE user_id = :user_id";
 $params = [':user_id' => $user_id];
