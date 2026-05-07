@@ -61,16 +61,15 @@ CREATE TABLE `media` (
   `favorite` tinyint(1) DEFAULT '0',
   `user_id` int(11) NOT NULL DEFAULT '0',
   `view_count` int(11) NOT NULL DEFAULT '0',
-  `commentaire` text,
-  `tmdb_rating` decimal(3,1) DEFAULT NULL
+  `commentaire` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Déchargement des données de la table `media`
 --
 
-INSERT INTO `media` (`id`, `title`, `rating`, `favorite_moment`, `image_url`, `type_media`, `created_at`, `favorite`, `user_id`, `view_count`, `commentaire`, `tmdb_rating`) VALUES
-(13, 'MAYDAY', '4.0', NULL, 'https://fr.web.img4.acsta.net/pictures/22/10/26/10/19/0944904.jpg', 'film', '2025-03-30 21:04:57', 0, 0, 0, NULL, NULL),
+INSERT INTO `media` (`id`, `title`, `rating`, `favorite_moment`, `image_url`, `type_media`, `created_at`, `favorite`, `user_id`, `view_count`, `commentaire`) VALUES
+-- ...existing code...
 (14, 'Alien, le huitième passager', '4.0', NULL, 'https://cafedesimages.fr/wp-content/uploads/2023/02/affiche.jpg', 'film', '2025-04-01 13:48:26', 0, 0, 0, NULL, NULL),
 (15, 'Aliens, le retour', '4.0', NULL, 'https://dunnozmovie.com/wp-content/uploads/2019/04/aliens_le_retour.jpg?w=683&amp;h=1024', 'film', '2025-04-01 13:49:21', 0, 0, 0, NULL, NULL),
 (16, 'Alien 3', '4.0', NULL, 'https://fr.web.img3.acsta.net/pictures/17/06/29/12/09/200767.jpg', 'film', '2025-04-01 13:50:36', 0, 0, 0, NULL, NULL),
@@ -367,7 +366,6 @@ CREATE TABLE `media_to_watch` (
   `type_media` enum('film','série') NOT NULL,
   `image_url` varchar(1000) DEFAULT NULL,
   `added_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `genres` text,
   `user_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -375,9 +373,9 @@ CREATE TABLE `media_to_watch` (
 -- Déchargement des données de la table `media_to_watch`
 --
 
-INSERT INTO `media_to_watch` (`id`, `title`, `type_media`, `image_url`, `added_date`, `genres`, `user_id`) VALUES
-(4, 'The Machinist', 'film', 'https://image.tmdb.org/t/p/w500/e9lzey90JYiW9LFGEccjvyW2btA.jpg', '2025-11-24 14:52:28', NULL, 0),
-(5, 'Evidence', 'film', 'https://image.tmdb.org/t/p/w500/4bloj9VOXaZwoDqkdse5aq5pVZn.jpg', '2025-11-28 20:22:51', NULL, 0),
+INSERT INTO `media_to_watch` (`id`, `title`, `type_media`, `image_url`, `added_date`, `user_id`) VALUES
+(4, 'The Machinist', 'film', 'https://image.tmdb.org/t/p/w500/e9lzey90JYiW9LFGEccjvyW2btA.jpg', '2025-11-24 14:52:28', 0),
+(5, 'Evidence', 'film', 'https://image.tmdb.org/t/p/w500/4bloj9VOXaZwoDqkdse5aq5pVZn.jpg', '2025-11-28 20:22:51', 0),
 (6, 'Ça : Bienvenue à Derry', 'série', 'https://image.tmdb.org/t/p/w500/rsc88AZaxgk8dEGK3l0FIQu8lJQ.jpg', '2025-12-09 22:37:25', NULL, 0),
 (8, 'Hannibal', 'série', 'https://image.tmdb.org/t/p/w500/pbV2eLnKSIm1epSZt473UYfqaeZ.jpg', '2025-12-10 08:36:06', NULL, 0),
 (9, 'Divergente', 'film', 'https://image.tmdb.org/t/p/w500/3JpyVHMYrI7C9HUFcZecnlgVsXY.jpg', '2025-12-10 08:42:31', NULL, 0),

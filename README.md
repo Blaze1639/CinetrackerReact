@@ -13,18 +13,103 @@ docker-compose up --build
 ## 🏗️ Architecture
 
 ```
-cinetrack/
-├── docker-compose.yml        ← Dev local
+CinetrackerReact/
+├── backend/
+│   ├── api/
+│   │   ├── _helpers.php
+│   │   ├── accueil.php
+│   │   ├── ajouter_a_voir.php
+│   │   ├── ajouter_actu.php
+│   │   ├── ajouter_film.php
+│   │   ├── basculer_favori.php
+│   │   ├── connexion.php
+│   │   ├── deconnexion.php
+│   │   ├── delete.php
+│   │   ├── deplacement.php
+│   │   ├── env_notif.php
+│   │   ├── incrementer_compteur.php
+│   │   ├── inscription.php
+│   │   ├── liste_a_voir.php
+│   │   ├── marquer_lu.php
+│   │   ├── media.php
+│   │   ├── modifier_a_voir.php
+│   │   ├── modifier_film.php
+│   │   ├── notifications.php
+│   │   ├── profile.php
+│   │   ├── session.php
+│   │   ├── session_handler.php
+│   │   ├── supprimer_a_voir.php
+│   │   ├── supprimer_actu.php
+│   │   ├── supprimer_film.php
+│   │   ├── supprimer_notif.php
+│   ├── db.php
+│   ├── Dockerfile
+│   ├── Dockerfile.prod
+│   ├── README_securite.md
+├── docker/
+│   └── mysql/
+│       └── init.sql
 ├── frontend/
-│   ├── Dockerfile            ← Dev (Node + Vite)
-│   ├── Dockerfile.prod       ← Prod (build + Nginx)
+│   ├── __mocks__/
+│   │   └── fileMock.js
+│   ├── src/
+│   │   ├── __tests__/
+│   │   │   └── helpers.test.js
+│   │   ├── components/
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── StarRating.jsx
+│   │   │   └── TmdbSearch.jsx
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx
+│   │   ├── pages/
+│   │   │   ├── Accueil.jsx
+│   │   │   ├── AddMedia.jsx
+│   │   │   ├── AddWatchlist.jsx
+│   │   │   ├── Aleatoire.jsx
+│   │   │   ├── Auth.jsx
+│   │   │   ├── EditMedia.jsx
+│   │   │   ├── EditWatchlist.jsx
+│   │   │   ├── Home.jsx
+│   │   │   ├── MediaList.jsx
+│   │   │   ├── Profile.jsx
+│   │   │   └── Watchlist.jsx
+│   │   ├── services/
+│   │   │   └── api.js
+│   │   ├── styles/
+│   │   │   ├── accueil.css
+│   │   │   ├── ajouter_a_voir.css
+│   │   │   ├── ajouter_film.css
+│   │   │   ├── aleatoire.css
+│   │   │   ├── common.css
+│   │   │   ├── dashboard.css
+│   │   │   ├── deplacement.css
+│   │   │   ├── evaluer_film.css
+│   │   │   ├── formulaire.css
+│   │   │   ├── formulaire_a_voir.css
+│   │   │   ├── home.css
+│   │   │   ├── index.css
+│   │   │   ├── inscription_connexion.css
+│   │   │   ├── liste_a_voir.css
+│   │   │   ├── modifier_a_voir.css
+│   │   │   ├── modifier_film.css
+│   │   │   ├── profile.css
+│   │   │   └── style.css
+│   │   ├── utils/
+│   │   │   └── helpers.js
+│   │   ├── App.jsx
+│   │   └── main.jsx
+│   ├── babel.config.cjs
+│   ├── Dockerfile
+│   ├── Dockerfile.prod
+│   ├── index.html
+│   ├── jest.config.cjs
 │   ├── nginx.conf
-│   └── src/
-└── backend/
-    ├── Dockerfile            ← Dev
-    ├── Dockerfile.prod       ← Prod
-    └── api/
-```
+│   ├── package.json
+│   └── vite.config.js
+├── docker-compose.yml
+├── package.json
+├── README.md
+├── static.json
 
 ---
 
