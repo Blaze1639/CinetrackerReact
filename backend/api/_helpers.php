@@ -43,7 +43,8 @@ function verify_csrf(): void {
 
 // ── Sanitisation ─────────────────────────────────────────────
 function sanitize(string $value): string {
-    return htmlspecialchars(strip_tags(trim($value)), ENT_QUOTES, 'UTF-8');
+    // Ne pas utiliser htmlspecialchars - json_encode gère l'échappement
+    return trim($value);
 }
 
 function sanitize_array(array $data): array {
@@ -61,13 +62,13 @@ function json_success($data = [], $message = null): void {
     $out = ['success' => true];
     if ($message) $out['message'] = $message;
     if (is_array($data)) $out = array_merge($out, $data);
-    echo json_encode($out);
+    echo json_encode($out, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
 
 function json_error($message, $code = 400): void {
     http_response_code($code);
-    echo json_encode(['success' => false, 'error' => $message]);
+    echo json_encode(['success' => false, 'error' => $message], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
 }
 

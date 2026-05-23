@@ -18,7 +18,7 @@ if (in_array($origin, $allowed_origins)) {
 } else {
     header("Access-Control-Allow-Origin: https://cinetrack-frontend.onrender.com");
 }
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, X-Requested-With, X-CSRF-Token');
 header('Access-Control-Allow-Credentials: true');
