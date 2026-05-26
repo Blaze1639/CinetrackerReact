@@ -1,0 +1,55 @@
+name: CI/CD CineTracker
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  # =========================
+  # TESTS FRONTEND
+  # =========================App.test.js
+  frontend-tests:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Installer les dépendances
+        run: npm install
+
+      - name: Lancer les tests
+        run: npm test -- --watchAll=false
+
+  # =========================
+  # BUILD DOCKER
+  # =========================
+  docker-build:
+    runs-on: ubuntu-latest
+
+    needs: frontend-tests
+
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Build frontend Docker
+        run: docker build -t cinetracker-frontend ./frontend -f ./frontend/Dockerfile.prod
+
+      - name: Build backend Docker
+        run: docker build -t cinetracker-backend ./backend -f ./backend/Dockerfile.prod
