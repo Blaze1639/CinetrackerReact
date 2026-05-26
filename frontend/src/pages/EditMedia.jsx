@@ -2,6 +2,7 @@ import '../styles/modifier_film.css'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import { useApi } from '../services/api'
 
 export default function EditMedia() {
@@ -36,6 +37,7 @@ export default function EditMedia() {
         <button type="submit">💾 Enregistrer</button>
         <a href="#" onClick={()=>navigate('/index')}>⟵ Retour</a>
       </form>
+      <Footer />
     </>
   )
 }

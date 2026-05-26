@@ -1,6 +1,6 @@
 import '../styles/home.css'
 import { Link } from 'react-router-dom'
-import '../styles/home.css'
+import Footer from '../components/Footer'
 
 export default function Home() {
   return (
@@ -74,10 +74,7 @@ export default function Home() {
         </div>
       </section>
 
-      <footer>
-        <p>CinéTracker © 2025 - Développé avec passion pour les cinéphiles et sériephiles</p>
-        <p style={{marginTop:'1rem',opacity:0.5}}>Version 1.2 | React • PHP • MySQL • Docker</p>
-      </footer>
+      <Footer />
     </>
   )
 }
