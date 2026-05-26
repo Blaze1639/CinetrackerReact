@@ -27,8 +27,9 @@ export default function Auth({ mode }) {
   const f = (k) => ({ value: form[k], onChange: e => setForm(p => ({...p, [k]: e.target.value})) })
 
   return (
-    <div style={{ minHeight:'100vh', background:'#0a0a0a', display:'flex', alignItems:'center', justifyContent:'center', padding:'24px' }}>
-      <div className={isLogin ? 'login-container' : 'inscription-container'}>
+    <>
+      <div style={{ minHeight:'100vh', background:'#0a0a0a', display:'flex', alignItems:'center', justifyContent:'center', padding:'24px' }}>
+        <div className={isLogin ? 'login-container' : 'inscription-container'}>
         <div className="logo">CINÉTRACKER</div>
         <h1>{isLogin ? 'Connexion' : 'Créer un compte'}</h1>
 
@@ -61,8 +62,9 @@ export default function Auth({ mode }) {
             : <><Link to="/connexion">J'ai déjà un compte</Link><Link to="/">← Retour à l'accueil</Link></>
           }
         </div>
+        </div>
       </div>
       <Footer />
-    </div>
+    </>
   )
 }
