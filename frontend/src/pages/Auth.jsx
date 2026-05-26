@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useApi } from '../services/api'
+import Footer from '../components/Footer'
 
 export default function Auth({ mode }) {
   const { login } = useAuth()
@@ -61,6 +62,7 @@ export default function Auth({ mode }) {
           }
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

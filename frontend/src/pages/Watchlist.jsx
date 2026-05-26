@@ -3,6 +3,7 @@ import '../styles/evaluer_film.css'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import StarRating from '../components/StarRating'
 import { useApi } from '../services/api'
 
@@ -89,6 +90,7 @@ export default function Watchlist() {
           </div>
         </div>
       )}
+      <Footer />
     </>
   )
 }

@@ -2,6 +2,7 @@ import '../styles/modifier_a_voir.css'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import { useApi } from '../services/api'
 
 export default function EditWatchlist() {
@@ -36,6 +37,7 @@ export default function EditWatchlist() {
         <button type="submit">💾 Enregistrer</button>
         <a href="#" onClick={()=>navigate('/liste-a-voir')}>⟵ Retour</a>
       </form>
+      <Footer />
     </>
   )
 }

@@ -3,6 +3,7 @@ import '../styles/ajouter_film.css'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import TmdbSearch from '../components/TmdbSearch'
 import StarRating from '../components/StarRating'
 import { useApi } from '../services/api'
@@ -32,6 +33,7 @@ export default function AddMedia() {
         <p>Redirection vers la liste...</p>
         <div className="progress-bar-bg"><div className="progress-bar-fill" /></div>
       </div>
+      <Footer />
     </>
   )
 
@@ -59,6 +61,7 @@ export default function AddMedia() {
           <button type="submit">Ajouter</button>
         </form>
       </div>
+      <Footer />
     </>
   )
 }

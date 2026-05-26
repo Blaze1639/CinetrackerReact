@@ -1,6 +1,7 @@
 import '../styles/aleatoire.css'
 import { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import { useApi } from '../services/api'
 
 const API_KEY = import.meta.env.VITE_TMDB_KEY || '22eef7e96585baa751a8384b942e4470'
@@ -140,6 +141,7 @@ export default function Aleatoire() {
           </div>
         )}
       </div>
+      <Footer />
     </>
   )
 }

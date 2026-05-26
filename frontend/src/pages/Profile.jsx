@@ -2,6 +2,7 @@ import '../styles/profile.css'
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import { useAuth } from '../context/AuthContext'
 import { useApi } from '../services/api'
 
@@ -183,6 +184,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
+      <Footer />
     </>
   )
 }

@@ -3,6 +3,7 @@ import '../styles/ajouter_a_voir.css'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import TmdbSearch from '../components/TmdbSearch'
 import { useApi } from '../services/api'
 
@@ -29,6 +30,7 @@ export default function AddWatchlist() {
         <p>Redirection vers votre liste...</p>
         <div className="progress-bar-bg"><div className="progress-bar-fill" /></div>
       </div>
+      <Footer />
     </>
   )
 
@@ -51,6 +53,7 @@ export default function AddWatchlist() {
           <button type="submit">Ajouter à ma liste</button>
         </form>
       </div>
+      <Footer />
     </>
   )
 }

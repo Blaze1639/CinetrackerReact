@@ -2,6 +2,7 @@ import '../styles/accueil.css'
 import '../styles/dashboard.css'
 import { useState, useEffect, useRef } from 'react'
 import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
 import { useAuth } from '../context/AuthContext'
 import { useApi } from '../services/api'
 
@@ -149,6 +150,7 @@ export default function Accueil() {
           </div>
         </section>
       </div>
+      <Footer />
     </>
   )
 }
