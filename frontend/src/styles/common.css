@@ -43,6 +43,7 @@ html, body, #root {
   padding: 0 24px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   position: sticky;
   top: 0;
@@ -72,6 +73,85 @@ html, body, #root {
 
 .navbar .profile-link svg { color: white; }
 .navbar .profile-link:hover svg { color: var(--red); }
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 16px 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 12px;
+  cursor: pointer;
+  padding: 10px;
+  width: 44px;
+  height: 44px;
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.menu-toggle:hover,
+.menu-toggle:focus-visible {
+  background: rgba(255,255,255,0.16);
+  border-color: rgba(229,9,20,0.35);
+  outline: none;
+}
+
+.menu-toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  margin: 3px 0;
+  background: white;
+  border-radius: 999px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.menu-toggle.open span:nth-child(1) {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.menu-toggle.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.menu-toggle.open span:nth-child(3) {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.logout-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 16px 14px;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.logout-button:hover {
+  color: var(--red);
+}
 
 /* Dropdown */
 .dropdown {
@@ -541,11 +621,65 @@ button[type="submit"]:hover {
   .navbar {
     padding: 0 12px;
     gap: 0;
+    align-items: center;
+    justify-content: center;
   }
 
-  .navbar a, .dropbtn {
-    padding: 12px 8px;
-    font-size: 13px;
+  .navbar-brand {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .menu-toggle {
+    display: flex;
+  }
+
+  .nav-links {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    background: #000;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-links.open {
+    display: flex;
+    justify-content: center;
+  }
+
+  .navbar a,
+  .dropbtn,
+  .logout-button,
+  .navbar .profile-link {
+    width: auto;
+    padding: 12px 14px;
+    font-size: 14px;
+    text-align: center;
+    margin: 0.25rem auto;
+  }
+
+  .dropdown {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .dropdown-content {
+    position: static;
+    width: auto;
+    min-width: 220px;
+    border: none;
+    box-shadow: none;
+    background: #111;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .dropdown-content a {
+    padding: 12px 18px;
+    margin: 0 auto;
   }
 
   .media-container {

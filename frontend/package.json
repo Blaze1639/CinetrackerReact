@@ -2,15 +2,17 @@
   "name": "cinetrack-frontend",
   "version": "1.0.0",
   "scripts": {
-  "dev": "vite",
-  "build": "vite build",
-  "preview": "vite preview",
-  "test": "jest --config jest.config.cjs"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "jest --config jest.config.cjs"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.0"
+    "react-router-dom": "^6.22.0",
+    "tailwindcss": "^4.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",

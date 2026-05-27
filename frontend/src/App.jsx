@@ -12,6 +12,7 @@ import Watchlist from './pages/Watchlist'
 import AddWatchlist from './pages/AddWatchlist'
 import EditWatchlist from './pages/EditWatchlist'
 import Profile from './pages/Profile'
+import MentionsLegales from './pages/MentionsLegales'
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/ajouter-a-voir" element={<PrivateRoute><AddWatchlist /></PrivateRoute>} />
           <Route path="/modifier-a-voir/:id" element={<PrivateRoute><EditWatchlist /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/mentions-legales" element={<MentionsLegales />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
