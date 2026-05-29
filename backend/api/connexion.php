@@ -1,8 +1,11 @@
 <?php
+
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/_helpers.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') json_error('Méthode non supportée', 405);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    json_error('Méthode non supportée', 405);
+}
 
 $body = get_body();
 $email     = $body['email'] ?? '';
@@ -13,7 +16,9 @@ $raw = json_decode(file_get_contents('php://input'), true) ?? [];
 $motdepasse = $raw['motdepasse'] ?? '';
 $email = sanitize($raw['email'] ?? '');
 
-if (!$email || !$motdepasse) json_error('Champs manquants');
+if (!$email || !$motdepasse) {
+    json_error('Champs manquants');
+}
 
 $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
 $stmt->execute([$email]);

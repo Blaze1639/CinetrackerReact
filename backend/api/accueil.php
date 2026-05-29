@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . '/../db.php';
 require_once __DIR__ . '/_helpers.php';
 require_auth();
@@ -13,14 +14,32 @@ $months = $stmt2->fetchAll();
 $stmt3 = $pdo->prepare("SELECT m.title,m.rating,m.image_url,m.created_at,m.commentaire,u.username,m.user_id FROM media m JOIN users u ON m.user_id=u.id WHERE m.user_id!=? AND m.type_media='film' ORDER BY RAND() LIMIT 20");
 $stmt3->execute([$user_id]);
 $all_films = $stmt3->fetchAll();
-$leaderboard_films = []; $seen = [];
-foreach ($all_films as $f) { if (!in_array($f['user_id'],$seen)) { $leaderboard_films[]=$f; $seen[]=$f['user_id']; if(count($leaderboard_films)>=5)break; } }
+$leaderboard_films = [];
+$seen = [];
+foreach ($all_films as $f) {
+    if (!in_array($f['user_id'], $seen)) {
+        $leaderboard_films[] = $f;
+        $seen[] = $f['user_id'];
+        if (count($leaderboard_films) >= 5) {
+            break;
+        }
+    }
+}
 $stmt4 = $pdo->prepare("SELECT m.title,m.rating,m.image_url,m.created_at,m.commentaire,u.username,m.user_id FROM media m JOIN users u ON m.user_id=u.id WHERE m.user_id!=? AND m.type_media='série' ORDER BY RAND() LIMIT 20");
 $stmt4->execute([$user_id]);
 $all_series = $stmt4->fetchAll();
-$leaderboard_series = []; $seen2 = [];
-foreach ($all_series as $s) { if (!in_array($s['user_id'],$seen2)) { $leaderboard_series[]=$s; $seen2[]=$s['user_id']; if(count($leaderboard_series)>=5)break; } }
+$leaderboard_series = [];
+$seen2 = [];
+foreach ($all_series as $s) {
+    if (!in_array($s['user_id'], $seen2)) {
+        $leaderboard_series[] = $s;
+        $seen2[] = $s['user_id'];
+        if (count($leaderboard_series) >= 5) {
+            break;
+        }
+    }
+}
 $stmt5 = $pdo->prepare("SELECT a.*,u.username as admin_username FROM actualite a JOIN users u ON a.user_id=u.id ORDER BY a.created_at DESC LIMIT 5");
 $stmt5->execute();
 $actualites = $stmt5->fetchAll();
-json_success(['year_stats'=>$year_stats,'months'=>$months,'leaderboard_films'=>$leaderboard_films,'leaderboard_series'=>$leaderboard_series,'actualites'=>$actualites]);
+json_success(['year_stats' => $year_stats,'months' => $months,'leaderboard_films' => $leaderboard_films,'leaderboard_series' => $leaderboard_series,'actualites' => $actualites]);

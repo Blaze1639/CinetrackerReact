@@ -7,6 +7,9 @@ dist/
 # Docker data
 docker/mysql/data/
 
+# PHP dependencies
+backend/api/vendor/
+
 # Environnement
 .env
 .env.local
