@@ -174,9 +174,11 @@ Créé par `docker/mysql/init.sql` :
 ### Frontend React
 1. Créer un **Web Service** depuis le dossier `frontend/`
 2. **Dockerfile path** : `frontend/Dockerfile.prod`
-3. Variables d'environnement :
+3. **Build environment variables** (important — ces variables sont nécessaires *au moment du build*, pas seulement au runtime) :
    - `VITE_API_URL=https://<votre-backend>.onrender.com`
    - `VITE_TMDB_KEY=<votre clé TMDB>`
+
+> **Important** : Vite substitue les variables `VITE_*` à la compilation. Elles doivent être définies en tant que **Build Environment Variables** dans Render (pas seulement Environment Variables). Le `Dockerfile.prod` les accepte via `ARG`.
 
 ---
 

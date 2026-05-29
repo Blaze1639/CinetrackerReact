@@ -1,6 +1,14 @@
 # STEP 1 : build React
 FROM node:18 AS build
 
+# Build arg pour surcharger l'URL API (ex: depuis Render Dashboard → Environment)
+ARG VITE_API_URL
+ARG VITE_TMDB_KEY=22eef7e96585baa751a8384b942e4470
+
+# Exposer les args comme env vars pour que Vite les lise au build
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_TMDB_KEY=$VITE_TMDB_KEY
+
 WORKDIR /app
 
 COPY package*.json ./

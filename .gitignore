@@ -17,8 +17,12 @@ backend/.env.*.local
 # JWT private key (ne pas committer en prod)
 backend/config/jwt/private.pem
 
-# Environnement
+# Environnement local (jamais commité)
 .env.local
+frontend/.env.local
+# VITE_API_URL local pour le dev (créer manuellement si besoin)
+# frontend/.env → commité sans VITE_API_URL
+# frontend/.env.production → commité avec l'URL Render
 
 # OS
 .DS_Store
