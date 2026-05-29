@@ -1,7 +1,7 @@
 FROM php:8.4-fpm AS build
 
 RUN apt-get update && apt-get install -y \
-    libicu-dev libonig-dev libzip-dev zip unzip \
+    openssl libicu-dev libonig-dev libzip-dev zip unzip \
     && docker-php-ext-install pdo pdo_mysql intl opcache zip mbstring \
     && rm -rf /var/lib/apt/lists/*
 
@@ -10,6 +10,14 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /app
 COPY . .
 RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+# Générer les clés JWT RSA (gitignorées, donc absentes du repo)
+RUN mkdir -p config/jwt && \
+    if [ ! -f config/jwt/private.pem ]; then \
+        openssl genpkey -algorithm RSA -out config/jwt/private.pem -pkeyopt rsa_keygen_bits:4096 2>/dev/null && \
+        openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem 2>/dev/null; \
+    fi && \
+    chmod 644 config/jwt/private.pem config/jwt/public.pem
 
 # ── Runtime image ─────────────────────────────────────────
 FROM php:8.4-fpm
