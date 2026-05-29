@@ -25,7 +25,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # ─── Backend PHP + Apache ────────────────────────────────
+  # ─── Backend Symfony + Nginx + PHP-FPM ──────────────────
   backend:
     build:
       context: ./backend
@@ -34,17 +34,17 @@ services:
     restart: unless-stopped
     ports:
       - "8080:80"
-    volumes:
-      - ./backend:/var/www/html
     depends_on:
       db:
         condition: service_healthy
     environment:
-      DB_HOST: db
-      DB_NAME: media_tracker
-      DB_PORT: 3306
-      DB_USER: cinetrack
-      DB_PASS: cinetrack
+      APP_ENV: prod
+      APP_SECRET: changeme_generate_random_32chars
+      DATABASE_URL: "mysql://cinetrack:cinetrack@db:3306/media_tracker?serverVersion=8.0&charset=utf8mb4"
+      JWT_SECRET_KEY: "%kernel.project_dir%/config/jwt/private.pem"
+      JWT_PUBLIC_KEY: "%kernel.project_dir%/config/jwt/public.pem"
+      JWT_PASSPHRASE: ""
+      FRONTEND_URL: "http://localhost:5173"
     networks:
       - cinetrack_net
 
@@ -62,6 +62,7 @@ services:
       - /app/node_modules
     environment:
       - VITE_TMDB_KEY=22eef7e96585baa751a8384b942e4470
+      - VITE_API_URL=http://localhost:8080
     depends_on:
       - backend
     networks:

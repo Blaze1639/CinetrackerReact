@@ -1,0 +1,14 @@
+nelmio_cors:
+    defaults:
+        origin_regex: false
+        allow_origin:
+            - 'http://localhost:5173'
+            - 'http://localhost:3000'
+            - '%env(FRONTEND_URL)%'
+        allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
+        allow_headers: ['Content-Type', 'Authorization']
+        allow_credentials: false
+        expose_headers: ['Authorization']
+        max_age: 3600
+    paths:
+        '^/api/': ~
