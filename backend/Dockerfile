@@ -11,6 +11,8 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     && docker-php-ext-install pdo pdo_mysql intl opcache zip mbstring \
+    && pecl install pcov \
+    && docker-php-ext-enable pcov \
     && rm -rf /var/lib/apt/lists/*
 
 # Composer

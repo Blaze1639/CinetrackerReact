@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         stopOnFailure="false">
+
+    <!-- ─── Source analysée pour la couverture (PHPUnit 11+) ─── -->
+    <source>
+        <include>
+            <directory suffix=".php">src/</directory>
+        </include>
+        <exclude>
+            <file>src/Kernel.php</file>
+        </exclude>
+    </source>
+
+    <!-- ─── Suites de tests (sans chevauchement) ────────────── -->
+    <testsuites>
+        <testsuite name="Entity Tests">
+            <directory>tests/Entity/</directory>
+        </testsuite>
+        <testsuite name="Controller Tests">
+            <directory>tests/Controller/</directory>
+        </testsuite>
+    </testsuites>
+
+    <!-- ─── Formats de rapport de couverture ────────────────── -->
+    <coverage>
+        <report>
+            <html outputDirectory="var/coverage/html" lowUpperBound="50" highLowerBound="90"/>
+            <text outputFile="php://stdout" showUncoveredFiles="false" showOnlySummary="false"/>
+            <clover outputFile="var/coverage/clover.xml"/>
+        </report>
+    </coverage>
+
+    <!-- ─── Variables d'environnement ───────────────────────── -->
+    <php>
+        <ini name="error_reporting" value="-1"/>
+        <ini name="memory_limit" value="256M"/>
+        <env name="APP_ENV" value="test"/>
+        <env name="APP_SECRET" value="test_secret_32_chars_minimum__xx"/>
+        <env name="DATABASE_URL" value="mysql://cinetrack:cinetrack@127.0.0.1:3306/media_tracker_test?serverVersion=8.0&amp;charset=utf8mb4"/>
+        <env name="JWT_SECRET_KEY" value="%kernel.project_dir%/config/jwt/private.pem"/>
+        <env name="JWT_PUBLIC_KEY" value="%kernel.project_dir%/config/jwt/public.pem"/>
+        <env name="JWT_PASSPHRASE" value=""/>
+        <env name="KERNEL_CLASS" value="App\Kernel"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="999999"/>
+    </php>
+</phpunit>
