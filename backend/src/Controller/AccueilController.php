@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\ActualiteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -13,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class AccueilController extends AbstractController
 {
     #[Route('/accueil', methods: ['GET'])]
-    public function accueil(Request $req, EntityManagerInterface $em): JsonResponse
+    public function accueil(Request $req, EntityManagerInterface $em, ActualiteRepository $actualiteRepository): JsonResponse
     {
         /** @var User $user */
         $user   = $this->getUser();
@@ -72,14 +73,7 @@ class AccueilController extends AbstractController
         $leaderboardSeries = $this->pickOnePerUser($allSeries, 5);
 
         // Actualités
-        $sqlActu = <<<SQL
-            SELECT a.*, u.username AS admin_username
-            FROM actualite a
-            JOIN users u ON a.user_id = u.id
-            ORDER BY a.created_at DESC
-            LIMIT 5
-        SQL;
-        $actualites = $conn->executeQuery($sqlActu)->fetchAllAssociative();
+        $actualites = $actualiteRepository->findRecent(5);
 
         return $this->json([
             'success'            => true,
