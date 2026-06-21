@@ -16,20 +16,6 @@ class AccueilController extends AbstractController
     #[Route('/accueil', methods: ['GET'])]
     public function accueil(Request $req, EntityManagerInterface $em, ActualiteRepository $actualiteRepository): JsonResponse
     {
-        try {
-            return $this->accueilInner($req, $em, $actualiteRepository);
-        } catch (\Throwable $e) {
-            return $this->json([
-                'success' => false,
-                'debug_error' => $e->getMessage(),
-                'debug_file' => $e->getFile() . ':' . $e->getLine(),
-                'debug_trace' => array_slice(explode("\n", $e->getTraceAsString()), 0, 5),
-            ], 500);
-        }
-    }
-
-    private function accueilInner(Request $req, EntityManagerInterface $em, ActualiteRepository $actualiteRepository): JsonResponse
-    {
         /** @var User $user */
         $user   = $this->getUser();
         $uid    = $user->getId();

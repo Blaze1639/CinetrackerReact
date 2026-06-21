@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Actualite;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\Persistence\ManagerRegistry;
 
 class ActualiteRepository extends ServiceEntityRepository
@@ -24,7 +25,7 @@ class ActualiteRepository extends ServiceEntityRepository
         SQL;
 
         return $this->getEntityManager()->getConnection()
-            ->executeQuery($sql, ['limit' => $limit], ['limit' => \PDO::PARAM_INT])
+            ->executeQuery($sql, ['limit' => $limit], ['limit' => ParameterType::INTEGER])
             ->fetchAllAssociative();
     }
 }
