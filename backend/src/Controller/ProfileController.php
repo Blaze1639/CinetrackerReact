@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\MediaRepository;
 use App\Repository\MediaToWatchRepository;
+use App\Repository\NotificationRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,23 +19,12 @@ class ProfileController extends AbstractController
     public function profile(
         MediaRepository $mediaRepo,
         MediaToWatchRepository $watchRepo,
-        EntityManagerInterface $em,
     ): JsonResponse {
         /** @var User $user */
         $user = $this->getUser();
 
-        $stats = $em->createQuery(
-            'SELECT
-                SUM(CASE WHEN m.typeMedia = \'film\' THEN 1 ELSE 0 END) as films,
-                SUM(CASE WHEN m.typeMedia = \'série\' THEN 1 ELSE 0 END) as series,
-                COUNT(m.id) as total,
-                SUM(CASE WHEN m.favorite = true THEN 1 ELSE 0 END) as favoris
-             FROM App\Entity\Media m WHERE m.userId = :uid'
-        )->setParameter('uid', $user->getId())->getSingleResult();
-
-        $aVoir = $em->createQuery('SELECT COUNT(w.id) FROM App\Entity\MediaToWatch w WHERE w.userId = :uid')
-            ->setParameter('uid', $user->getId())
-            ->getSingleScalarResult();
+        $stats = $mediaRepo->getProfileStats($user->getId());
+        $aVoir = $watchRepo->countByUser($user->getId());
 
         return $this->json([
             'success'       => true,
@@ -50,16 +41,21 @@ class ProfileController extends AbstractController
     }
 
     #[Route('/delete', methods: ['POST'])]
-    public function delete(EntityManagerInterface $em): JsonResponse
-    {
+    public function delete(
+        MediaRepository $mediaRepo,
+        MediaToWatchRepository $watchRepo,
+        NotificationRepository $notificationRepo,
+        UserRepository $userRepo,
+        EntityManagerInterface $em,
+    ): JsonResponse {
         /** @var User $user */
         $user = $this->getUser();
         $uid  = $user->getId();
 
-        $em->createQuery('DELETE FROM App\Entity\Media m WHERE m.userId = :uid')->setParameter('uid', $uid)->execute();
-        $em->createQuery('DELETE FROM App\Entity\MediaToWatch w WHERE w.userId = :uid')->setParameter('uid', $uid)->execute();
-        $em->createQuery('DELETE FROM App\Entity\Notification n WHERE n.userId = :uid')->setParameter('uid', $uid)->execute();
-        $em->remove($em->getRepository(User::class)->find($uid));
+        $mediaRepo->deleteAllForUser($uid);
+        $watchRepo->deleteAllForUser($uid);
+        $notificationRepo->deleteAllForUser($uid);
+        $em->remove($userRepo->find($uid));
         $em->flush();
 
         return $this->json(['success' => true, 'message' => 'Compte supprimé']);

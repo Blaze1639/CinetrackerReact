@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Notification;
 use App\Entity\User;
+use App\Repository\NotificationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class NotificationController extends AbstractController
 {
     #[Route('', methods: ['GET'])]
-    public function index(EntityManagerInterface $em): JsonResponse
+    public function index(NotificationRepository $notificationRepo): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -22,20 +23,14 @@ class NotificationController extends AbstractController
             return $this->json(['success' => false, 'error' => 'Non autorisé'], 403);
         }
 
-        $conn = $em->getConnection();
-        $notifications = $conn->executeQuery(
-            'SELECT n.*, u.username AS sender_username, u.email AS sender_email
-             FROM notifications n JOIN users u ON n.user_id = u.id
-             ORDER BY n.created_at DESC'
-        )->fetchAllAssociative();
-
-        $unread = (int) $conn->executeQuery("SELECT COUNT(*) FROM notifications WHERE status = 'non_lu'")->fetchOne();
+        $notifications = $notificationRepo->findAllWithSender();
+        $unread = $notificationRepo->countUnread();
 
         return $this->json(['success' => true, 'notifications' => $notifications, 'unread_count' => $unread]);
     }
 
     #[Route('/{id}/read', methods: ['GET'])]
-    public function markRead(int $id, EntityManagerInterface $em): JsonResponse
+    public function markRead(int $id, NotificationRepository $notificationRepo): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -43,14 +38,13 @@ class NotificationController extends AbstractController
             return $this->json(['success' => false, 'error' => 'Non autorisé'], 403);
         }
 
-        $em->createQuery("UPDATE App\Entity\Notification n SET n.status = 'lu' WHERE n.id = :id")
-            ->setParameter('id', $id)->execute();
+        $notificationRepo->markAsRead($id);
 
         return $this->json(['success' => true, 'message' => 'Marqué comme lu']);
     }
 
     #[Route('/{id}', methods: ['DELETE'])]
-    public function delete(int $id, EntityManagerInterface $em): JsonResponse
+    public function delete(int $id, EntityManagerInterface $em, NotificationRepository $notificationRepo): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -58,7 +52,7 @@ class NotificationController extends AbstractController
             return $this->json(['success' => false, 'error' => 'Non autorisé'], 403);
         }
 
-        $notif = $em->getRepository(Notification::class)->find($id);
+        $notif = $notificationRepo->find($id);
         if ($notif) {
             $em->remove($notif);
             $em->flush();

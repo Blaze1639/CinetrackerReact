@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Actualite;
 use App\Entity\User;
+use App\Repository\ActualiteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -40,7 +41,7 @@ class ActualiteController extends AbstractController
     }
 
     #[Route('/{id}', methods: ['DELETE'])]
-    public function delete(int $id, EntityManagerInterface $em): JsonResponse
+    public function delete(int $id, EntityManagerInterface $em, ActualiteRepository $actualiteRepository): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -48,7 +49,7 @@ class ActualiteController extends AbstractController
             return $this->json(['success' => false, 'error' => 'Non autorisé'], 403);
         }
 
-        $actu = $em->getRepository(Actualite::class)->find($id);
+        $actu = $actualiteRepository->find($id);
         if ($actu) {
             $em->remove($actu);
             $em->flush();

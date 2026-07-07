@@ -87,10 +87,7 @@ class AuthController extends AbstractController
             return $this->json(['success' => false, 'error' => 'Le mot de passe doit contenir au moins 6 caractères'], 400);
         }
 
-        $existing = $em->createQuery('SELECT u FROM App\Entity\User u WHERE u.email = :email OR u.username = :pseudo')
-            ->setParameter('email', $email)
-            ->setParameter('pseudo', $pseudo)
-            ->getOneOrNullResult();
+        $existing = $userRepo->findByEmailOrUsername($email, $pseudo);
 
         if ($existing) {
             return $this->json(['success' => false, 'error' => 'Ce pseudo ou cet email existe déjà'], 400);

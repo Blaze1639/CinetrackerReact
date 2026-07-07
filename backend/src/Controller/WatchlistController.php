@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Media;
 use App\Entity\MediaToWatch;
 use App\Entity\User;
+use App\Repository\MediaToWatchRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -15,24 +16,14 @@ use Symfony\Component\Routing\Attribute\Route;
 class WatchlistController extends AbstractController
 {
     #[Route('', methods: ['GET'])]
-    public function index(Request $req, EntityManagerInterface $em): JsonResponse
+    public function index(Request $req, MediaToWatchRepository $watchRepo): JsonResponse
     {
         /** @var User $user */
         $user   = $this->getUser();
         $filtre = $req->query->get('type', '');
         $search = trim($req->query->get('search', ''));
 
-        $qb = $em->createQueryBuilder()->select('w')->from(MediaToWatch::class, 'w')
-            ->where('w.userId = :uid')->setParameter('uid', $user->getId());
-
-        if ($filtre === 'film' || $filtre === 'série') {
-            $qb->andWhere('w.typeMedia = :type')->setParameter('type', $filtre);
-        }
-        if ($search) {
-            $qb->andWhere('w.title LIKE :search')->setParameter('search', '%' . $search . '%');
-        }
-
-        $items = $qb->orderBy('w.addedDate', 'DESC')->getQuery()->getResult();
+        $items = $watchRepo->search($user->getId(), $filtre, $search);
 
         return $this->json(['success' => true, 'items' => array_map(fn($w) => $w->toArray(), $items)]);
     }
@@ -62,11 +53,11 @@ class WatchlistController extends AbstractController
     }
 
     #[Route('/{id}', methods: ['PUT'])]
-    public function update(int $id, Request $req, EntityManagerInterface $em): JsonResponse
+    public function update(int $id, Request $req, EntityManagerInterface $em, MediaToWatchRepository $watchRepo): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
-        $item = $em->getRepository(MediaToWatch::class)->findOneBy(['id' => $id, 'userId' => $user->getId()]);
+        $item = $watchRepo->findOneBy(['id' => $id, 'userId' => $user->getId()]);
 
         if (!$item) {
             return $this->json(['success' => false, 'error' => 'Introuvable'], 404);
@@ -83,11 +74,11 @@ class WatchlistController extends AbstractController
     }
 
     #[Route('/{id}', methods: ['DELETE'])]
-    public function delete(int $id, EntityManagerInterface $em): JsonResponse
+    public function delete(int $id, EntityManagerInterface $em, MediaToWatchRepository $watchRepo): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
-        $item = $em->getRepository(MediaToWatch::class)->findOneBy(['id' => $id, 'userId' => $user->getId()]);
+        $item = $watchRepo->findOneBy(['id' => $id, 'userId' => $user->getId()]);
 
         if (!$item) {
             return $this->json(['success' => false, 'error' => 'Introuvable'], 404);
@@ -100,11 +91,11 @@ class WatchlistController extends AbstractController
     }
 
     #[Route('/{id}/move', methods: ['POST'])]
-    public function move(int $id, Request $req, EntityManagerInterface $em): JsonResponse
+    public function move(int $id, Request $req, EntityManagerInterface $em, MediaToWatchRepository $watchRepo): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
-        $item = $em->getRepository(MediaToWatch::class)->findOneBy(['id' => $id, 'userId' => $user->getId()]);
+        $item = $watchRepo->findOneBy(['id' => $id, 'userId' => $user->getId()]);
 
         if (!$item) {
             return $this->json(['success' => false, 'error' => 'Introuvable'], 404);
