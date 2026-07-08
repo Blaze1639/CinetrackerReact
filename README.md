@@ -10,6 +10,9 @@ Monorepo : `frontend` (React + Vite), `backend` (Symfony 7.3 + PHP 8.2+), `db` (
 # Construire et démarrer les 3 services (db, backend, frontend)
 docker-compose up --build
 
+# Build les images qui n'existe pas
+docker-compose up
+
 # Démarrer en arrière-plan
 docker-compose up -d
 
