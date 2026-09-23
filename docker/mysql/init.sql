@@ -41,8 +41,8 @@ CREATE TABLE `actualite` (
 --
 
 INSERT INTO `actualite` (`id`, `titre`, `contenu`, `user_id`, `created_at`) VALUES
-(1, 'Test', 'Actu 1', 0, '2026-02-09 00:30:20'),
-(2, 'd', 'd', 0, '2026-03-13 23:43:32');
+(1, 'Test', 'Actu 1', 1, '2026-02-09 00:30:20'),
+(2, 'd', 'd', 1, '2026-03-13 23:43:32');
 
 -- --------------------------------------------------------
 
@@ -374,8 +374,8 @@ CREATE TABLE `media_to_watch` (
 --
 
 INSERT INTO `media_to_watch` (`id`, `title`, `type_media`, `image_url`, `added_date`, `user_id`) VALUES
-(4, 'The Machinist', 'film', 'https://image.tmdb.org/t/p/w500/e9lzey90JYiW9LFGEccjvyW2btA.jpg', '2025-11-24 14:52:28', 0),
-(5, 'Evidence', 'film', 'https://image.tmdb.org/t/p/w500/4bloj9VOXaZwoDqkdse5aq5pVZn.jpg', '2025-11-28 20:22:51', 0),
+(4, 'The Machinist', 'film', 'https://image.tmdb.org/t/p/w500/e9lzey90JYiW9LFGEccjvyW2btA.jpg', '2025-11-24 14:52:28', 1),
+(5, 'Evidence', 'film', 'https://image.tmdb.org/t/p/w500/4bloj9VOXaZwoDqkdse5aq5pVZn.jpg', '2025-11-28 20:22:51', 1),
 (6, 'Ça : Bienvenue à Derry', 'série', 'https://image.tmdb.org/t/p/w500/rsc88AZaxgk8dEGK3l0FIQu8lJQ.jpg', '2025-12-09 22:37:25', 1),
 (8, 'Hannibal', 'série', 'https://image.tmdb.org/t/p/w500/pbV2eLnKSIm1epSZt473UYfqaeZ.jpg', '2025-12-10 08:36:06', 1),
 (9, 'Divergente', 'film', 'https://image.tmdb.org/t/p/w500/3JpyVHMYrI7C9HUFcZecnlgVsXY.jpg', '2025-12-10 08:42:31', 1),

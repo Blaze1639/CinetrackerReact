@@ -71,6 +71,27 @@ class MediaRepository extends ServiceEntityRepository
             ->fetchAllAssociative();
     }
 
+    /**
+     * @return Media[]
+     */
+    public function getMediaForMonth(int $uid, int $year, int $month, string $type): array
+    {
+        $start = new \DateTimeImmutable(sprintf('%04d-%02d-01', $year, $month));
+        $end = $start->modify('+1 month');
+
+        return $this->createQueryBuilder('m')
+            ->where('m.userId = :uid')
+            ->andWhere('m.typeMedia = :type')
+            ->andWhere('m.createdAt >= :start AND m.createdAt < :end')
+            ->setParameter('uid', $uid)
+            ->setParameter('type', $type)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->orderBy('m.createdAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getLeaderboard(int $uid, string $type, int $limit = 20): array
     {
         $sql = <<<SQL
@@ -103,6 +124,21 @@ class MediaRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
 
         return $count > 0;
+    }
+
+    /**
+     * @return Media[]
+     */
+    public function findByTitleTypeUser(string $title, string $type, int $uid): array
+    {
+        return $this->createQueryBuilder('m')
+            ->where('LOWER(m.title) = LOWER(:title) AND m.typeMedia = :type AND m.userId = :uid')
+            ->setParameter('title', $title)
+            ->setParameter('type', $type)
+            ->setParameter('uid', $uid)
+            ->orderBy('m.id', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     /**

@@ -41,9 +41,10 @@ export default function Navbar() {
           className="dropdown"
           onMouseEnter={() => setAddOpen(true)}
           onMouseLeave={() => setAddOpen(false)}
-          onClick={() => setAddOpen(prev => !prev)}
         >
-          <button className="dropbtn" type="button">Ajouter ▼</button>
+          <button className="dropbtn" type="button" onClick={() => setAddOpen(prev => !prev)}>
+            Ajouter ▼
+          </button>
           {addOpen && (
             <div className="dropdown-content">
               <Link to="/ajouter" onClick={closeMenu}>Ajouter un film ou une série</Link>
@@ -56,9 +57,10 @@ export default function Navbar() {
           className="dropdown"
           onMouseEnter={() => setListOpen(true)}
           onMouseLeave={() => setListOpen(false)}
-          onClick={() => setListOpen(prev => !prev)}
         >
-          <button className="dropbtn" type="button">Listes ▼</button>
+          <button className="dropbtn" type="button" onClick={() => setListOpen(prev => !prev)}>
+            Listes ▼
+          </button>
           {listOpen && (
             <div className="dropdown-content">
               <Link to="/index" onClick={closeMenu}>Liste des films ou séries</Link>

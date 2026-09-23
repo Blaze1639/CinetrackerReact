@@ -13,6 +13,9 @@ export default function Accueil() {
   const api = useApi()
   const [year, setYear] = useState(new Date().getFullYear())
   const [data, setData] = useState({ year_stats:{}, months:[], leaderboard_films:[], leaderboard_series:[], actualites:[] })
+  const [monthModal, setMonthModal] = useState(null)
+  const [monthMedia, setMonthMedia] = useState([])
+  const [monthLoading, setMonthLoading] = useState(false)
 
   const deleteActu = async (id) => {
     if (!confirm('Supprimer cette actualité ?')) return
@@ -30,6 +33,21 @@ export default function Accueil() {
 
   useEffect(() => {
     if (!data.months.length || !chartRef.current) return
+    const handleChartClick = async (_, elements) => {
+      if (!elements.length) return
+      const element = elements[0]
+      const month = element.index + 1
+      const type = element.datasetIndex === 0 ? 'film' : 'série'
+      setMonthModal({ month, type })
+      setMonthMedia([])
+      setMonthLoading(true)
+      try {
+        const result = await api.accueil.monthMedia(year, month, type)
+        if (result.success) setMonthMedia(result.media || [])
+      } finally {
+        setMonthLoading(false)
+      }
+    }
     const draw = (Chart) => {
       if (chartInstance.current) chartInstance.current.destroy()
       chartInstance.current = new Chart(chartRef.current.getContext('2d'), {
@@ -43,6 +61,8 @@ export default function Accueil() {
         },
         options: {
           responsive: true, maintainAspectRatio: false,
+          onClick: handleChartClick,
+          onHover: (event, elements) => { event.native.target.style.cursor = elements.length ? 'pointer' : 'default' },
           plugins: {
             title: { display: true, text: `Films et séries ajoutés par mois – ${year}`, color: '#fff', font: { size: 15 } },
             legend: { labels: { color: '#ccc' } }
@@ -150,6 +170,32 @@ export default function Accueil() {
           </div>
         </section>
       </div>
+
+      {monthModal && (
+        <div className="month-modal-overlay" onClick={e => e.target === e.currentTarget && setMonthModal(null)}>
+          <div className="month-modal" role="dialog" aria-modal="true" aria-labelledby="month-modal-title">
+            <button className="month-modal-close" onClick={() => setMonthModal(null)} aria-label="Fermer">×</button>
+            <h2 id="month-modal-title">{monthModal.type === 'film' ? 'Films' : 'Séries'} de {MOIS[monthModal.month - 1]} {year}</h2>
+            {monthLoading
+              ? <p className="month-modal-empty">Chargement...</p>
+              : monthMedia.length === 0
+                ? <p className="month-modal-empty">Aucun média pour cette catégorie.</p>
+                : <div className="month-media-list">
+                  {monthMedia.map(media => (
+                    <article className="month-media-item" key={media.id}>
+                      {media.image_url && <img src={media.image_url} alt="" />}
+                      <div>
+                        <h3>{media.title}</h3>
+                        <p>{'★'.repeat(Number(media.rating || 0))}{'☆'.repeat(5 - Number(media.rating || 0))} · {media.rating || 0}/5</p>
+                        {media.commentaire && <small>{media.commentaire}</small>}
+                      </div>
+                    </article>
+                  ))}
+                </div>
+            }
+          </div>
+        </div>
+      )}
       <Footer />
     </>
   )

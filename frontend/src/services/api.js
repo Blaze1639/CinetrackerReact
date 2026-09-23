@@ -22,6 +22,9 @@ export function createApi(apiFetch) {
       profile:  ()     => get('/api/profile'),
       delete:   ()     => post('/api/delete', {}),
     },
+    backup: {
+      import:   (body) => post('/api/backup/import', body),
+    },
     media: {
       getAll:           (params = {}) => get('/api/media?' + new URLSearchParams(params)),
       add:              (body)        => post('/api/media', body),
@@ -38,7 +41,8 @@ export function createApi(apiFetch) {
       move:    (body)        => post('/api/watchlist/' + body.media_id + '/move', body),
     },
     accueil: {
-      get: (year) => get(`/api/accueil?year=${year}`),
+      get:       (year) => get(`/api/accueil?year=${year}`),
+      monthMedia: (year, month, type) => get(`/api/accueil/month-media?year=${year}&month=${month}&type=${encodeURIComponent(type)}`),
     },
     notifications: {
       getAll:   ()     => get('/api/notifications'),

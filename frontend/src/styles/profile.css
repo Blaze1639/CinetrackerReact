@@ -146,6 +146,50 @@ textarea.form-input {
 
 select.form-input { cursor: pointer; }
 
+/* Collection backup */
+.backup-section { border: 1px solid rgba(229,9,20,0.35); }
+
+.backup-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.backup-heading .section-title { margin-top: 0; }
+.backup-description, .backup-note { color: #999; font-size: 14px; line-height: 1.5; }
+.backup-description { margin: -8px 0 20px; }
+.backup-note { margin: 12px 0 0; font-size: 12px; }
+
+.backup-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(229,9,20,0.14);
+  color: #e50914;
+  font-size: 26px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.backup-button:disabled { opacity: 0.65; cursor: wait; }
+.backup-import-button {
+  margin-left: 10px;
+  background: transparent;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 11px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  font-family: inherit;
+}
+.backup-import-button:hover { border-color: #e50914; color: #e50914; }
+.backup-import-button:disabled { opacity: 0.65; cursor: wait; }
+
 /* Buttons */
 .btn-primary {
   background: #e50914;
@@ -234,4 +278,7 @@ select.form-input { cursor: pointer; }
   .avatar { width: 68px; height: 68px; font-size: 28px; }
   .avatar-name { font-size: 18px; }
   .avatar-section { gap: 14px; }
+  .backup-heading { gap: 12px; }
+  .backup-icon { width: 36px; height: 36px; font-size: 22px; }
+  .backup-import-button { margin: 10px 0 0; }
 }

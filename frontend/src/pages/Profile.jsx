@@ -1,5 +1,5 @@
 import '../styles/profile.css'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
@@ -15,6 +15,8 @@ export default function Profile() {
   const [notifications, setNotifications] = useState([])
   const [suggestion, setSuggestion] = useState({type_message:'',message:''})
   const [newActu, setNewActu] = useState({titre:'',contenu:''})
+  const [backupLoading, setBackupLoading] = useState(false)
+  const backupInput = useRef(null)
 
   useEffect(() => {
     api.auth.profile().then(d => {
@@ -67,6 +69,68 @@ export default function Profile() {
     setAlert({type:'success',message:'✅ Notification supprimée'})
   }
 
+  const handleBackup = async () => {
+    setBackupLoading(true)
+    try {
+      const firstPage = await api.media.getAll({page:1})
+      if (!firstPage.success) throw new Error('media')
+
+      const media = [...(firstPage.media || [])]
+      for (let page = 2; page <= (firstPage.pages || 1); page += 1) {
+        const nextPage = await api.media.getAll({page})
+        if (!nextPage.success) throw new Error('media')
+        media.push(...(nextPage.media || []))
+      }
+
+      const watchlist = await api.watchlist.getAll()
+      if (!watchlist.success) throw new Error('watchlist')
+
+      const backup = {
+        format: 'Cinetrack backup',
+        version: 1,
+        exported_at: new Date().toISOString(),
+        account: { username: profile.username, email: profile.email },
+        media,
+        watchlist: watchlist.items || [],
+      }
+      const file = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'})
+      const url = URL.createObjectURL(file)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `cinetrack-sauvegarde-${new Date().toISOString().slice(0,10)}.json`
+      link.click()
+      URL.revokeObjectURL(url)
+      setAlert({type:'success',message:'✅ Votre sauvegarde a été téléchargée.'})
+    } catch {
+      setAlert({type:'error',message:'❌ Impossible de créer la sauvegarde pour le moment.'})
+    } finally {
+      setBackupLoading(false)
+    }
+  }
+
+  const handleImport = async (event) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+
+    try {
+      const data = JSON.parse(await file.text())
+      if (!Array.isArray(data.media) || !Array.isArray(data.watchlist)) throw new Error('invalid')
+      if (!confirm('Les éléments portant le même titre et le même type seront remplacés par les données du fichier. Continuer ?')) return
+
+      setBackupLoading(true)
+      const result = await api.backup.import(data)
+      if (!result.success) throw new Error(result.error || 'import')
+      const refreshedProfile = await api.auth.profile()
+      if (refreshedProfile.success) setProfile(refreshedProfile)
+      setAlert({type:'success',message:`✅ Import terminé : ${result.media_imported} médias et ${result.watchlist_imported} éléments à voir.`})
+    } catch {
+      setAlert({type:'error',message:'❌ Ce fichier JSON n’est pas une sauvegarde Cinetrack valide.'})
+    } finally {
+      setBackupLoading(false)
+    }
+  }
+
   if (!profile) return <div className="loading">Chargement...</div>
 
   const initial = (profile.username||'U')[0].toUpperCase()
@@ -100,6 +164,24 @@ export default function Profile() {
           <h3 className="section-title">Informations du compte</h3>
           <div className="form-group"><label className="form-label">Pseudo</label><input className="form-input" value={profile.username} readOnly /></div>
           <div className="form-group"><label className="form-label">Email</label><input className="form-input" value={profile.email} readOnly /></div>
+        </div>
+
+        <div className="profile-section backup-section">
+          <div className="backup-heading">
+            <div>
+              <h3 className="section-title">Sauvegarde de ma collection</h3>
+              <p className="backup-description">Enregistrez vos films, séries, notes, commentaires, favoris et votre liste « à voir » dans un fichier JSON.</p>
+            </div>
+            <span className="backup-icon" aria-hidden="true">↓</span>
+          </div>
+          <button className="btn-primary backup-button" onClick={handleBackup} disabled={backupLoading}>
+            {backupLoading ? 'Préparation de la sauvegarde...' : 'Télécharger ma sauvegarde'}
+          </button>
+          <input ref={backupInput} type="file" accept="application/json,.json" onChange={handleImport} hidden />
+          <button className="backup-import-button" onClick={() => backupInput.current?.click()} disabled={backupLoading}>
+            Importer un fichier JSON
+          </button>
+          <p className="backup-note">La sauvegarde est créée sur votre appareil et ne supprime aucune donnée de votre compte.</p>
         </div>
 
         {isAdmin && (

@@ -42,6 +42,21 @@ class MediaToWatchRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    /**
+     * @return MediaToWatch[]
+     */
+    public function findByTitleTypeUser(string $title, string $type, int $uid): array
+    {
+        return $this->createQueryBuilder('w')
+            ->where('LOWER(w.title) = LOWER(:title) AND w.typeMedia = :type AND w.userId = :uid')
+            ->setParameter('title', $title)
+            ->setParameter('type', $type)
+            ->setParameter('uid', $uid)
+            ->orderBy('w.id', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function deleteAllForUser(int $uid): void
     {
         $this->createQueryBuilder('w')

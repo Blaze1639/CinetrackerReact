@@ -50,6 +50,26 @@ class AccueilController extends AbstractController
         ]);
     }
 
+    #[Route('/accueil/month-media', methods: ['GET'])]
+    public function monthMedia(Request $req, MediaRepository $mediaRepo): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $year = (int) $req->query->get('year', date('Y'));
+        $month = (int) $req->query->get('month', 0);
+        $type = $req->query->get('type', '');
+
+        if ($year < 2000 || $year > 2200 || $month < 1 || $month > 12 || !in_array($type, ['film', 'série'], true)) {
+            return $this->json(['success' => false, 'error' => 'Paramètres du mois invalides'], 400);
+        }
+
+        $media = $mediaRepo->getMediaForMonth($user->getId(), $year, $month, $type);
+        return $this->json([
+            'success' => true,
+            'media' => array_map(fn($item) => $item->toArray(), $media),
+        ]);
+    }
+
     private function pickOnePerUser(array $rows, int $max): array
     {
         $result = [];
