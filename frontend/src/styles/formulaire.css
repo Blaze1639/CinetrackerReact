@@ -136,6 +136,51 @@
   max-width: none;
 }
 
+.batch-add-button,
+.batch-submit-button {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px 16px;
+  border: 1px solid #e50914;
+  border-radius: 6px;
+  color: #fff;
+  background: #e50914;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.batch-add-button { background: transparent; }
+.batch-add-button:hover { background: rgba(229,9,20,0.14); }
+.batch-submit-button:disabled,
+.batch-add-button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.batch-queue {
+  margin-top: 24px;
+  border-top: 1px solid #383838;
+  padding-top: 16px;
+}
+
+.batch-queue h3 { color: #fff; font-size: 16px; margin: 0 0 10px; }
+.batch-queue ul { list-style: none; padding: 0; margin: 0; }
+
+.batch-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #383838;
+  color: #fff;
+}
+
+.batch-item div { min-width: 0; }
+.batch-item strong,
+.batch-item span { display: block; overflow-wrap: anywhere; }
+.batch-item span { color: #aaa; font-size: 13px; margin-top: 3px; }
+.batch-item button { flex: 0 0 auto; border: 0; background: none; color: #ff777d; cursor: pointer; font: inherit; }
+.batch-item button:disabled { opacity: 0.55; cursor: not-allowed; }
+
 input[readonly] {
   background: #1a1a1a !important;
   cursor: not-allowed;

@@ -15,7 +15,11 @@ export default function Navbar() {
     navigate('/')
   }
 
-  const closeMenu = () => setMenuOpen(false)
+  const closeMenu = () => {
+    setMenuOpen(false)
+    setAddOpen(false)
+    setListOpen(false)
+  }
 
   return (
     <div className="navbar">
@@ -37,36 +41,24 @@ export default function Navbar() {
         <Link to="/accueil" onClick={closeMenu}>Accueil</Link>
         <Link to="/aleatoire" onClick={closeMenu}>Film/Série Aléatoire</Link>
 
-        <div
-          className="dropdown"
-          onMouseEnter={() => setAddOpen(true)}
-          onMouseLeave={() => setAddOpen(false)}
-        >
-          <button className="dropbtn" type="button" onClick={() => setAddOpen(prev => !prev)}>
+        <div className="dropdown">
+          <button className="dropbtn" type="button" aria-expanded={addOpen} aria-controls="add-dropdown" onClick={() => { setAddOpen(prev => !prev); setListOpen(false) }}>
             Ajouter ▼
           </button>
-          {addOpen && (
-            <div className="dropdown-content">
-              <Link to="/ajouter" onClick={closeMenu}>Ajouter un film ou une série</Link>
-              <Link to="/ajouter-a-voir" onClick={closeMenu}>Film ou série à voir</Link>
-            </div>
-          )}
+          <div id="add-dropdown" className={`dropdown-content${addOpen ? ' open' : ''}`}>
+            <Link to="/ajouter" onClick={closeMenu}>Ajouter un film ou une série</Link>
+            <Link to="/ajouter-a-voir" onClick={closeMenu}>Film ou série à voir</Link>
+          </div>
         </div>
 
-        <div
-          className="dropdown"
-          onMouseEnter={() => setListOpen(true)}
-          onMouseLeave={() => setListOpen(false)}
-        >
-          <button className="dropbtn" type="button" onClick={() => setListOpen(prev => !prev)}>
+        <div className="dropdown">
+          <button className="dropbtn" type="button" aria-expanded={listOpen} aria-controls="list-dropdown" onClick={() => { setListOpen(prev => !prev); setAddOpen(false) }}>
             Listes ▼
           </button>
-          {listOpen && (
-            <div className="dropdown-content">
-              <Link to="/index" onClick={closeMenu}>Liste des films ou séries</Link>
-              <Link to="/liste-a-voir" onClick={closeMenu}>Liste à voir</Link>
-            </div>
-          )}
+          <div id="list-dropdown" className={`dropdown-content${listOpen ? ' open' : ''}`}>
+            <Link to="/index" onClick={closeMenu}>Liste des films ou séries</Link>
+            <Link to="/liste-a-voir" onClick={closeMenu}>Liste à voir</Link>
+          </div>
         </div>
 
         <Link to="/profile" className="profile-link" title="Mon profil" onClick={closeMenu}>

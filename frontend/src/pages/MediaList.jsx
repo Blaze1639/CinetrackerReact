@@ -39,38 +39,53 @@ export default function MediaList() {
     return [...arr].sort((a, b) => a - b)
   }
 
+  const formatAddedDate = (value) => {
+    if (!value) return ''
+    const date = new Date(value.replace(' ', 'T'))
+    if (Number.isNaN(date.getTime())) return ''
+    return date.toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })
+  }
+
   return (
     <>
       <Navbar />
       <h1>Liste des médias</h1>
 
       <div className="filter-container">
-        <label>Filtrer par type :</label>
-        <select value={filters.type} onChange={e => setFilter('type', e.target.value)}>
-          <option value="">Tous</option>
-          <option value="film">Films</option>
-          <option value="série">Séries</option>
-          <option value="favorite">Favoris</option>
-        </select>
+        <div className="filter-field">
+          <label>Filtrer par type :</label>
+          <select value={filters.type} onChange={e => setFilter('type', e.target.value)}>
+            <option value="">Tous</option>
+            <option value="film">Films</option>
+            <option value="série">Séries</option>
+            <option value="favorite">Favoris</option>
+          </select>
+        </div>
 
-        <label>Année :</label>
-        <select value={filters.year} onChange={e => setFilter('year', e.target.value)}>
-          <option value="">Toutes</option>
-          {Array.from({length: currentYear - 2019}, (_, i) => 2020 + i).map(y =>
-            <option key={y} value={y}>{y}</option>
-          )}
-        </select>
+        <div className="filter-field">
+          <label>Année :</label>
+          <select value={filters.year} onChange={e => setFilter('year', e.target.value)}>
+            <option value="">Toutes</option>
+            {Array.from({length: currentYear - 2019}, (_, i) => 2020 + i).map(y =>
+              <option key={y} value={y}>{y}</option>
+            )}
+          </select>
+        </div>
 
-        <label>Note :</label>
-        <select value={filters.rating} onChange={e => setFilter('rating', e.target.value)}>
-          <option value="">Toutes</option>
-          {[1,2,3,4,5].map(r => <option key={r} value={r}>{r}/5</option>)}
-        </select>
+        <div className="filter-field">
+          <label>Note :</label>
+          <select value={filters.rating} onChange={e => setFilter('rating', e.target.value)}>
+            <option value="">Toutes</option>
+            {[1,2,3,4,5].map(r => <option key={r} value={r}>{r}/5</option>)}
+          </select>
+        </div>
 
-        <label>Rechercher :</label>
-        <input type="text" placeholder="Entrez un titre..." value={filters.search}
-          onChange={e => setFilter('search', e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && fetchMedia()} />
+        <div className="filter-field">
+          <label>Rechercher :</label>
+          <input type="text" placeholder="Entrez un titre..." value={filters.search}
+            onChange={e => setFilter('search', e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && fetchMedia()} />
+        </div>
       </div>
 
       <div className="media-container">
@@ -85,6 +100,7 @@ export default function MediaList() {
                 <span className={`type ${m.type_media}`}>{m.type_media}</span>
               </div>
               <h2>{m.title}</h2>
+              {m.created_at && <p className="added-date">Ajouté le {formatAddedDate(m.created_at)}</p>}
               {m.image_url && <img src={m.image_url} alt={m.title} />}
               <span className="rating">⭐ {m.rating}/5</span>
               <div className="view-counter">

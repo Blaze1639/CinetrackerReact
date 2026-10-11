@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Media;
 use App\Entity\User;
 use App\Repository\MediaRepository;
+use App\Repository\MediaToWatchRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -46,7 +47,7 @@ class MediaController extends AbstractController
     }
 
     #[Route('', methods: ['POST'])]
-    public function add(Request $req, EntityManagerInterface $em, MediaRepository $mediaRepo): JsonResponse
+    public function add(Request $req, EntityManagerInterface $em, MediaRepository $mediaRepo, MediaToWatchRepository $watchRepo): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -65,8 +66,31 @@ class MediaController extends AbstractController
             return $this->json(['success' => false, 'error' => 'La note doit être entre 1 et 5'], 400);
         }
 
-        if ($mediaRepo->existsByTitleTypeUser($title, $typeMedia, $user->getId())) {
-            return $this->json(['success' => false, 'error' => 'Ce média existe déjà dans votre liste'], 400);
+        $existingMedia = $mediaRepo->findByTitleTypeUser($title, $typeMedia, $user->getId());
+        if ($existingMedia) {
+            if (!($data['increment_if_exists'] ?? false)) {
+                return $this->json([
+                    'success' => false,
+                    'duplicate' => true,
+                    'error' => 'Ce média existe déjà dans votre liste',
+                ], 409);
+            }
+
+            $media = $existingMedia[0];
+            $media->setViewCount($media->getViewCount() + 1);
+            $watchlistItems = $watchRepo->findByTitleTypeUser($title, $typeMedia, $user->getId());
+            foreach ($watchlistItems as $watchlistItem) {
+                $em->remove($watchlistItem);
+            }
+            $em->flush();
+
+            return $this->json([
+                'success' => true,
+                'id' => $media->getId(),
+                'view_count' => $media->getViewCount(),
+                'watchlist_removed' => count($watchlistItems),
+                'message' => 'Compteur de visionnage incrémenté',
+            ]);
         }
 
         $media = new Media();
@@ -74,9 +98,18 @@ class MediaController extends AbstractController
               ->setTypeMedia($typeMedia)->setCommentaire($commentaire ?: null)->setUserId($user->getId());
 
         $em->persist($media);
+        $watchlistItems = $watchRepo->findByTitleTypeUser($title, $typeMedia, $user->getId());
+        foreach ($watchlistItems as $watchlistItem) {
+            $em->remove($watchlistItem);
+        }
         $em->flush();
 
-        return $this->json(['success' => true, 'id' => $media->getId(), 'message' => ucfirst($typeMedia) . ' ajouté avec succès']);
+        return $this->json([
+            'success' => true,
+            'id' => $media->getId(),
+            'watchlist_removed' => count($watchlistItems),
+            'message' => ucfirst($typeMedia) . ' ajouté avec succès',
+        ]);
     }
 
     #[Route('/{id}', methods: ['PUT'])]

@@ -197,7 +197,10 @@ html, body, #root {
 
 .dropdown-content a:last-child { border-bottom: none; }
 .dropdown-content a:hover { background-color: var(--red); color: white; }
-.dropdown:hover .dropdown-content { display: block; }
+
+@media (hover: hover) and (pointer: fine) {
+  .dropdown:hover .dropdown-content { display: block; }
+}
 
 /* ============================================
    TYPOGRAPHY
@@ -676,6 +679,8 @@ button[type="submit"]:hover {
     text-align: center;
     margin: 0 auto;
   }
+
+  .dropdown-content.open { display: block; }
 
   .dropdown-content a {
     padding: 12px 18px;
