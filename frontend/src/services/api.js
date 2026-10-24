@@ -11,7 +11,7 @@ export function createApi(apiFetch) {
   const del = (url, body) =>
     apiFetch(BASE + url, { method: 'DELETE', body: body ? JSON.stringify(body) : undefined }).then(r => r.json())
 
-  const get = (url) => apiFetch(BASE + url).then(r => r.json())
+  const get = (url, options = {}) => apiFetch(BASE + url, options).then(r => r.json())
 
   return {
     auth: {
@@ -24,6 +24,9 @@ export function createApi(apiFetch) {
     },
     backup: {
       import:   (body) => post('/api/backup/import', body),
+    },
+    tmdb: {
+      search: (query, options = {}) => get('/api/tmdb/search?' + new URLSearchParams({ query }), options),
     },
     media: {
       getAll:           (params = {}) => get('/api/media?' + new URLSearchParams(params)),
