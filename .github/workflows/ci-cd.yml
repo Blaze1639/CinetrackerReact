@@ -62,7 +62,7 @@ jobs:
           extensions: pdo, pdo_mysql, json
 
       - name: Vérifier la syntaxe PHP
-        run: find backend/api -name "*.php" -exec php -l {} \;
+        run: find backend/src -name "*.php" -exec php -l {} \;
 
   docker-build:
     runs-on: ubuntu-latest

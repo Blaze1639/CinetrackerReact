@@ -117,7 +117,7 @@ npm test -- --watchAll=false --coverage
 npm run build
 
 # Job backend-check
-find backend/api -name "*.php" -exec php -l {} \;
+find backend/src -name "*.php" -exec php -l {} \;
 
 # Job docker-build
 docker build -f frontend/Dockerfile.prod ./frontend

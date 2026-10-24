@@ -42,3 +42,7 @@ user_settings.pb
 # Logs
 *.log
 supervisord.log
+
+# Rapports de tests
+coverage/
+.phpunit.result.cache
