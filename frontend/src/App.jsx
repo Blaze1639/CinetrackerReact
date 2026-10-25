@@ -1,20 +1,18 @@
-import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 
-// Chaque page est téléchargée seulement quand on y va : premier chargement plus léger.
-const Home = lazy(() => import('./pages/Home'))
-const Auth = lazy(() => import('./pages/Auth'))
-const Accueil = lazy(() => import('./pages/Accueil'))
-const Aleatoire = lazy(() => import('./pages/Aleatoire'))
-const MediaList = lazy(() => import('./pages/MediaList'))
-const AddMedia = lazy(() => import('./pages/AddMedia'))
-const EditMedia = lazy(() => import('./pages/EditMedia'))
-const Watchlist = lazy(() => import('./pages/Watchlist'))
-const AddWatchlist = lazy(() => import('./pages/AddWatchlist'))
-const EditWatchlist = lazy(() => import('./pages/EditWatchlist'))
-const Profile = lazy(() => import('./pages/Profile'))
-const MentionsLegales = lazy(() => import('./pages/MentionsLegales'))
+import Home from './pages/Home'
+import Auth from './pages/Auth'
+import Accueil from './pages/Accueil'
+import Aleatoire from './pages/Aleatoire'
+import MediaList from './pages/MediaList'
+import AddMedia from './pages/AddMedia'
+import EditMedia from './pages/EditMedia'
+import Watchlist from './pages/Watchlist'
+import AddWatchlist from './pages/AddWatchlist'
+import EditWatchlist from './pages/EditWatchlist'
+import Profile from './pages/Profile'
+import MentionsLegales from './pages/MentionsLegales'
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
@@ -32,7 +30,6 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Suspense fallback={<div className="loading">Chargement...</div>}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/connexion" element={<PublicRoute><Auth mode="login" /></PublicRoute>} />
@@ -49,7 +46,6 @@ export default function App() {
           <Route path="/mentions-legales" element={<MentionsLegales />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
-        </Suspense>
       </BrowserRouter>
     </AuthProvider>
   )

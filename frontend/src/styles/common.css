@@ -759,16 +759,6 @@ button[type="submit"]:hover {
   color: #e50914;
 }
 
-.search-results .result-overview {
-  font-size: 11px;
-  line-height: 1.35;
-  color: #999;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
 .search-feedback {
   margin-top: 16px;
   padding: 12px 14px;

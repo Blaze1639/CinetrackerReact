@@ -76,7 +76,6 @@ class TmdbController extends AbstractController
                 'title'       => $item['title'] ?? $item['name'] ?? '',
                 'year'        => $date ? substr($date, 0, 4) : null,
                 'poster_path' => $item['poster_path'] ?? null,
-                'overview'    => $item['overview'] ?? '',
             ];
         }
 

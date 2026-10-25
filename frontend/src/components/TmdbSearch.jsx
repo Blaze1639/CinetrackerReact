@@ -76,7 +76,6 @@ export default function TmdbSearch({ onSelect }) {
                 <span className="result-details">
                   <span className="title">{title}</span>
                   <span className="result-meta">{item.media_type === 'movie' ? 'Film' : 'Série'}{year ? ` · ${year}` : ''}</span>
-                  {item.overview && <span className="result-overview">{item.overview}</span>}
                 </span>
               </button>
             )
