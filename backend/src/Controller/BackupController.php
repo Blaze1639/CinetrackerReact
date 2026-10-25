@@ -40,13 +40,18 @@ class BackupController extends AbstractController
                 continue;
             }
 
-            $title = trim((string) ($item['title'] ?? ''));
+            $rawTitle = trim((string) ($item['title'] ?? ''));
+            $title = $this->decode($rawTitle);
             $type = $this->normalizeType($item['type_media'] ?? 'film');
             if (!$title || !$type) {
                 continue;
             }
 
+            // Also match rows still stored with HTML entities by the old PHP app.
             $matches = $mediaRepo->findByTitleTypeUser($title, $type, $uid);
+            if ($rawTitle !== $title) {
+                $matches = array_merge($matches, $mediaRepo->findByTitleTypeUser($rawTitle, $type, $uid));
+            }
             $media = $matches[0] ?? (new Media())->setUserId($uid);
             foreach (array_slice($matches, 1) as $duplicate) {
                 $em->remove($duplicate);
@@ -54,9 +59,10 @@ class BackupController extends AbstractController
 
             $media->setTitle($title)
                 ->setTypeMedia($type)
-                ->setImageUrl($item['image_url'] ?? null)
+                ->setImageUrl($this->normalizeNullableString($item['image_url'] ?? null))
                 ->setRating($this->normalizeRating($item['rating'] ?? null))
                 ->setCommentaire($this->normalizeNullableString($item['commentaire'] ?? null))
+                ->setFavoriteMoment($this->normalizeNullableString($item['favorite_moment'] ?? null))
                 ->setFavorite((bool) ($item['favorite'] ?? false))
                 ->setViewCount(max(0, (int) ($item['view_count'] ?? 0)));
 
@@ -79,13 +85,17 @@ class BackupController extends AbstractController
                 continue;
             }
 
-            $title = trim((string) ($item['title'] ?? ''));
+            $rawTitle = trim((string) ($item['title'] ?? ''));
+            $title = $this->decode($rawTitle);
             $type = $this->normalizeType($item['type_media'] ?? 'film');
             if (!$title || !$type) {
                 continue;
             }
 
             $matches = $watchRepo->findByTitleTypeUser($title, $type, $uid);
+            if ($rawTitle !== $title) {
+                $matches = array_merge($matches, $watchRepo->findByTitleTypeUser($rawTitle, $type, $uid));
+            }
             $watch = $matches[0] ?? (new MediaToWatch())->setUserId($uid);
             foreach (array_slice($matches, 1) as $duplicate) {
                 $em->remove($duplicate);
@@ -93,7 +103,7 @@ class BackupController extends AbstractController
 
             $watch->setTitle($title)
                 ->setTypeMedia($type)
-                ->setImageUrl($item['image_url'] ?? null);
+                ->setImageUrl($this->normalizeNullableString($item['image_url'] ?? null));
 
             if (!empty($item['added_date'])) {
                 try {
@@ -137,7 +147,12 @@ class BackupController extends AbstractController
 
     private function normalizeNullableString(mixed $value): ?string
     {
-        $value = trim((string) ($value ?? ''));
+        $value = $this->decode(trim((string) ($value ?? '')));
         return $value === '' ? null : $value;
+    }
+
+    private function decode(string $value): string
+    {
+        return html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 }
