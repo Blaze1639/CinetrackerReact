@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 #[Route('/api/tmdb', format: 'json')]
 class TmdbController extends AbstractController
@@ -14,13 +16,36 @@ class TmdbController extends AbstractController
     private const DEFAULT_API_KEY = '22eef7e96585baa751a8384b942e4470';
 
     #[Route('/search', methods: ['GET'])]
-    public function search(Request $req): JsonResponse
+    public function search(Request $req, CacheInterface $cache): JsonResponse
     {
         $query = trim((string) $req->query->get('query', ''));
         if (mb_strlen($query) < 2) {
             return $this->json(['success' => true, 'results' => []]);
         }
 
+        // Les résultats TMDB changent peu : une recherche déjà faite répond sans appel externe.
+        $results = $cache->get('tmdb_search_' . md5(mb_strtolower($query)), function (ItemInterface $item) use ($query) {
+            $item->expiresAfter(86400);
+            $results = $this->fetchResults($query);
+            if ($results === null) {
+                $item->expiresAfter(0);
+            }
+
+            return $results;
+        });
+
+        if ($results === null) {
+            return $this->json(['success' => false, 'error' => 'La recherche TMDB est indisponible.'], 502);
+        }
+
+        return $this->json(['success' => true, 'results' => $results]);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>|null null quand TMDB ne répond pas
+     */
+    private function fetchResults(string $query): ?array
+    {
         $apiKey = $_ENV['TMDB_API_KEY'] ?? $_SERVER['TMDB_API_KEY'] ?? self::DEFAULT_API_KEY;
         $url = 'https://api.themoviedb.org/3/search/multi?' . http_build_query([
             'api_key'       => $apiKey,
@@ -34,7 +59,7 @@ class TmdbController extends AbstractController
         $data = $body !== false ? json_decode($body, true) : null;
 
         if (!is_array($data) || !is_array($data['results'] ?? null)) {
-            return $this->json(['success' => false, 'error' => 'La recherche TMDB est indisponible.'], 502);
+            return null;
         }
 
         $results = [];
@@ -55,6 +80,6 @@ class TmdbController extends AbstractController
             ];
         }
 
-        return $this->json(['success' => true, 'results' => $results]);
+        return $results;
     }
 }

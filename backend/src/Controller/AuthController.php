@@ -21,6 +21,7 @@ class AuthController extends AbstractController
         UserRepository $userRepo,
         UserPasswordHasherInterface $hasher,
         JWTTokenManagerInterface $jwtManager,
+        EntityManagerInterface $em,
     ): JsonResponse {
         $data       = json_decode($request->getContent(), true) ?? [];
         $email      = trim($data['email'] ?? '');
@@ -34,6 +35,12 @@ class AuthController extends AbstractController
 
         if (!$user || !$hasher->isPasswordValid($user, $motdepasse)) {
             return $this->json(['success' => false, 'error' => 'Email ou mot de passe incorrect'], 401);
+        }
+
+        // Les anciens mots de passe (cost 12) sont re-hachés une fois pour accélérer les connexions suivantes.
+        if ($hasher->needsRehash($user)) {
+            $user->setPassword($hasher->hashPassword($user, $motdepasse));
+            $em->flush();
         }
 
         $token = $jwtManager->create($user);

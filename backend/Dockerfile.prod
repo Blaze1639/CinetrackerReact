@@ -9,12 +9,12 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 COPY . .
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+RUN composer install --no-dev --optimize-autoloader --classmap-authoritative --no-interaction --no-scripts
 
 # Générer les clés JWT RSA (gitignorées, donc absentes du repo)
 RUN mkdir -p config/jwt && \
     if [ ! -f config/jwt/private.pem ]; then \
-        openssl genpkey -algorithm RSA -out config/jwt/private.pem -pkeyopt rsa_keygen_bits:4096 2>/dev/null && \
+        openssl genpkey -algorithm RSA -out config/jwt/private.pem -pkeyopt rsa_keygen_bits:2048 2>/dev/null && \
         openssl rsa -pubout -in config/jwt/private.pem -out config/jwt/public.pem 2>/dev/null; \
     fi && \
     chmod 644 config/jwt/private.pem config/jwt/public.pem
@@ -31,14 +31,17 @@ WORKDIR /var/www/html
 COPY --from=build /app .
 COPY --from=build /app/vendor ./vendor
 
-RUN mkdir -p var/cache var/log && chown -R www-data:www-data var/ && chmod -R 775 var/
-
 COPY docker/nginx.conf /etc/nginx/sites-available/default
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY docker/start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
-RUN php bin/console cache:warmup --env=prod 2>/dev/null || true
+COPY docker/opcache.ini /usr/local/etc/php/conf.d/zz-opcache.ini
+
+# Le cache est préchauffé puis donné à www-data (PHP-FPM) pour qu'il puisse écrire dans les pools.
+RUN mkdir -p var/cache var/log \
+    && APP_ENV=prod php bin/console cache:warmup --env=prod \
+    && chown -R www-data:www-data var/ && chmod -R 775 var/
 
 EXPOSE 80
 CMD ["/usr/local/bin/start.sh"]

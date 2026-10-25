@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Media;
 use App\Entity\MediaToWatch;
 use App\Entity\User;
+use App\Repository\MediaRepository;
 use App\Repository\MediaToWatchRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -91,7 +92,7 @@ class WatchlistController extends AbstractController
     }
 
     #[Route('/{id}/move', methods: ['POST'])]
-    public function move(int $id, Request $req, EntityManagerInterface $em, MediaToWatchRepository $watchRepo): JsonResponse
+    public function move(int $id, Request $req, EntityManagerInterface $em, MediaToWatchRepository $watchRepo, MediaRepository $mediaRepo): JsonResponse
     {
         /** @var User $user */
         $user = $this->getUser();
@@ -104,13 +105,39 @@ class WatchlistController extends AbstractController
         $data    = json_decode($req->getContent(), true) ?? [];
         $rating  = (float) ($data['rating'] ?? 0);
 
+        $title     = trim($data['title'] ?? $item->getTitle());
+        $typeMedia = ($data['type_media'] ?? $item->getTypeMedia()) === 'série' ? 'série' : 'film';
+
+        // Déjà vu : on ne crée pas de doublon, comme pour l'ajout classique.
+        $existingMedia = $mediaRepo->findByTitleTypeUser($title, $typeMedia, $user->getId());
+        if ($existingMedia) {
+            if (!($data['increment_if_exists'] ?? false)) {
+                return $this->json([
+                    'success'   => false,
+                    'duplicate' => true,
+                    'error'     => 'Ce média existe déjà dans votre liste',
+                ], 409);
+            }
+
+            $media = $existingMedia[0];
+            $media->setViewCount($media->getViewCount() + 1);
+            $em->remove($item);
+            $em->flush();
+
+            return $this->json([
+                'success'    => true,
+                'view_count' => $media->getViewCount(),
+                'message'    => 'Compteur de visionnage incrémenté',
+            ]);
+        }
+
         if ($rating < 1 || $rating > 5) {
             return $this->json(['success' => false, 'error' => 'Note invalide (1-5)'], 400);
         }
 
         $media = new Media();
-        $media->setTitle(trim($data['title'] ?? $item->getTitle()))
-              ->setTypeMedia($data['type_media'] ?? $item->getTypeMedia())
+        $media->setTitle($title)
+              ->setTypeMedia($typeMedia)
               ->setImageUrl($data['image_url'] ?? $item->getImageUrl())
               ->setRating((string) $rating)
               ->setCommentaire(trim($data['commentaire'] ?? '') ?: null)

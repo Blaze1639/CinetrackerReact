@@ -1,5 +1,5 @@
 import '../styles/index.css'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
@@ -13,22 +13,42 @@ export default function MediaList() {
   const [filters, setFilters] = useState({ type:'', year:'', rating:'', search:'', page:1 })
   const currentYear = new Date().getFullYear()
 
+  const lastRequest = useRef(0)
+  const searchTimer = useRef(null)
+
   const fetchMedia = (f = filters) => {
     const params = Object.fromEntries(Object.entries(f).filter(([,v]) => v !== ''))
-    api.media.getAll(params).then(d => { if (d.success) { setMedia(d.media); setPages(d.pages) } })
+    // Ignore les réponses arrivées après une requête plus récente.
+    const requestId = ++lastRequest.current
+    api.media.getAll(params).then(d => {
+      if (requestId === lastRequest.current && d.success) { setMedia(d.media); setPages(d.pages) }
+    })
   }
 
   useEffect(() => { fetchMedia() }, [])
+  useEffect(() => () => clearTimeout(searchTimer.current), [])
 
-  const setFilter = (k, v) => { const nf = {...filters, [k]:v, page:1}; setFilters(nf); fetchMedia(nf) }
+  const setFilter = (k, v) => {
+    const nf = {...filters, [k]:v, page:1}
+    setFilters(nf)
+    clearTimeout(searchTimer.current)
+    // Recherche texte : on attend la fin de la frappe au lieu d'une requête par lettre.
+    if (k === 'search') searchTimer.current = setTimeout(() => fetchMedia(nf), 300)
+    else fetchMedia(nf)
+  }
   const setPage   = (p)    => { const nf = {...filters, page:p};       setFilters(nf); fetchMedia(nf) }
 
-  const toggleFav     = (id) => api.media.toggleFavorite(id).then(() => fetchMedia())
+  const toggleFav = (id) => {
+    // Mise à jour immédiate de l'étoile, puis synchro serveur.
+    setMedia(prev => prev.map(m => m.id === id ? {...m, favorite: m.favorite ? 0 : 1} : m))
+    api.media.toggleFavorite(id).then(d => { if (!d.success || filters.type === 'favorite') fetchMedia() })
+  }
   const incrementView = (id) => api.media.incrementCounter(id).then(d => {
     if (d.success) setMedia(prev => prev.map(m => m.id === id ? {...m, view_count: d.view_count} : m))
   })
   const deleteMedia = (id) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce média ?')) return
+    setMedia(prev => prev.filter(m => m.id !== id))
     api.media.remove(id).then(() => fetchMedia())
   }
 

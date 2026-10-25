@@ -24,16 +24,45 @@ export default function Watchlist() {
   useEffect(() => { fetchItems() }, [])
 
   const setFilter = (k, v) => { const nf = {...filters, [k]:v}; setFilters(nf); fetchItems(nf) }
+  // Retrait local immédiat : pas besoin de recharger toute la liste.
+  const removeLocally = (id) => setItems(prev => prev.filter(i => i.id !== id))
+
   const deleteItem = (id) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce média ?')) return
-    api.watchlist.remove(id).then(() => fetchItems())
+    removeLocally(id)
+    api.watchlist.remove(id).then(d => { if (!d.success) fetchItems() })
   }
-  const openModal = (item) => { setModal(item); setRating(0); setCommentaire('') }
+
+  const incrementExisting = async (item) => {
+    const data = await api.watchlist.move({ media_id:item.id, title:item.title, type_media:item.type_media, increment_if_exists:true })
+    if (data.success) removeLocally(item.id)
+    else alert(data.error || 'Impossible de mettre à jour ce média.')
+  }
+
+  const askIncrement = (item) => {
+    if (confirm(`${item.title} est déjà dans votre liste. Voulez-vous incrémenter le nombre de visionnages et le retirer de la liste à voir ?`)) {
+      return incrementExisting(item)
+    }
+  }
+
+  const openModal = async (item) => {
+    // Vérifie d'abord si le titre est déjà dans « mes films / séries » pour éviter un doublon.
+    const found = await api.media.getAll({ search:item.title })
+    const alreadySeen = found.success && found.media.some(m =>
+      m.title.toLowerCase() === item.title.toLowerCase() && m.type_media === item.type_media)
+    if (alreadySeen) return askIncrement(item)
+
+    setModal(item); setRating(0); setCommentaire('')
+  }
+
   const validateRating = async () => {
     if (!rating) return alert('Veuillez sélectionner une note')
-    await api.watchlist.move({ media_id:modal.id, title:modal.title, type_media:modal.type_media, image_url:modal.image_url, rating, commentaire })
+    const item = modal
+    const data = await api.watchlist.move({ media_id:item.id, title:item.title, type_media:item.type_media, image_url:item.image_url, rating, commentaire })
     setModal(null)
-    fetchItems()
+    if (data.duplicate) return askIncrement(item)
+    if (data.success) removeLocally(item.id)
+    else alert(data.error || 'Impossible de déplacer ce média.')
   }
 
   return (
