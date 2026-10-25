@@ -158,7 +158,7 @@ export default function Accueil() {
         </section>
 
         {/* Leaderboard */}
-        <section className="leaderboard">
+        {/* <section className="leaderboard">
           <h2>Top Médias des Autres Utilisateurs</h2>
           <div className="leaderboard-section">
             <h3>Films les Mieux Notés</h3>
@@ -168,7 +168,7 @@ export default function Accueil() {
             <h3>Séries les Mieux Notées</h3>
             <div className="media-container">{renderCards(data.leaderboard_series)}</div>
           </div>
-        </section>
+        </section> */}
       </div>
 
       {monthModal && (
