@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useRef } from 'react'
+import { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react'
 
 const BASE = import.meta.env.VITE_API_URL || 'https://cinetrack-backend-di8b.onrender.com'
 
@@ -48,7 +48,8 @@ export function AuthProvider({ children }) {
     })
   }
 
-  const apiFetch = (url, options = {}) => {
+  // Stable function: the token is read from tokenRef at call time.
+  const apiFetch = useCallback((url, options = {}) => {
     return fetch(url, {
       ...options,
       headers: {
@@ -57,7 +58,7 @@ export function AuthProvider({ children }) {
         ...(options.headers || {}),
       },
     })
-  }
+  }, [])
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading, apiFetch, tokenRef }}>

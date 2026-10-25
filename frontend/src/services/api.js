@@ -1,4 +1,5 @@
 // Service API centralisé — backend Symfony JWT
+import { useMemo } from 'react'
 const BASE = import.meta.env.VITE_API_URL || 'https://cinetrack-backend-di8b.onrender.com'
 
 export function createApi(apiFetch) {
@@ -63,5 +64,6 @@ export function createApi(apiFetch) {
 import { useAuth } from '../context/AuthContext'
 export function useApi() {
   const { apiFetch } = useAuth()
-  return createApi(apiFetch)
+  // Same object between renders, so it can be used as a useEffect dependency.
+  return useMemo(() => createApi(apiFetch), [apiFetch])
 }
