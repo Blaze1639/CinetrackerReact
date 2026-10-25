@@ -35,27 +35,24 @@ class BackupController extends AbstractController
         $mediaCount = 0;
         $watchlistCount = 0;
 
+        // Index existing rows once and drop every duplicate (same title and type),
+        // including rows still stored with HTML entities by the old PHP app.
+        $mediaIndex = $this->indexAndDedupe($mediaRepo->findBy(['userId' => $uid], ['id' => 'ASC']), $em);
+        $watchIndex = $this->indexAndDedupe($watchRepo->findBy(['userId' => $uid], ['id' => 'ASC']), $em);
+
         foreach ($data['media'] as $item) {
             if (!is_array($item)) {
                 continue;
             }
 
-            $rawTitle = trim((string) ($item['title'] ?? ''));
-            $title = $this->decode($rawTitle);
+            $title = $this->decode(trim((string) ($item['title'] ?? '')));
             $type = $this->normalizeType($item['type_media'] ?? 'film');
             if (!$title || !$type) {
                 continue;
             }
 
-            // Also match rows still stored with HTML entities by the old PHP app.
-            $matches = $mediaRepo->findByTitleTypeUser($title, $type, $uid);
-            if ($rawTitle !== $title) {
-                $matches = array_merge($matches, $mediaRepo->findByTitleTypeUser($rawTitle, $type, $uid));
-            }
-            $media = $matches[0] ?? (new Media())->setUserId($uid);
-            foreach (array_slice($matches, 1) as $duplicate) {
-                $em->remove($duplicate);
-            }
+            $key = $this->key($title, $type);
+            $media = $mediaIndex[$key] ??= (new Media())->setUserId($uid);
 
             $media->setTitle($title)
                 ->setTypeMedia($type)
@@ -85,21 +82,14 @@ class BackupController extends AbstractController
                 continue;
             }
 
-            $rawTitle = trim((string) ($item['title'] ?? ''));
-            $title = $this->decode($rawTitle);
+            $title = $this->decode(trim((string) ($item['title'] ?? '')));
             $type = $this->normalizeType($item['type_media'] ?? 'film');
             if (!$title || !$type) {
                 continue;
             }
 
-            $matches = $watchRepo->findByTitleTypeUser($title, $type, $uid);
-            if ($rawTitle !== $title) {
-                $matches = array_merge($matches, $watchRepo->findByTitleTypeUser($rawTitle, $type, $uid));
-            }
-            $watch = $matches[0] ?? (new MediaToWatch())->setUserId($uid);
-            foreach (array_slice($matches, 1) as $duplicate) {
-                $em->remove($duplicate);
-            }
+            $key = $this->key($title, $type);
+            $watch = $watchIndex[$key] ??= (new MediaToWatch())->setUserId($uid);
 
             $watch->setTitle($title)
                 ->setTypeMedia($type)
@@ -127,6 +117,31 @@ class BackupController extends AbstractController
             'watchlist_imported' => $watchlistCount,
             'message' => 'Sauvegarde importée et doublons fusionnés',
         ]);
+    }
+
+    /**
+     * @param array<Media|MediaToWatch> $rows sorted by id, the oldest row of each title is kept
+     * @return array<string, Media|MediaToWatch>
+     */
+    private function indexAndDedupe(array $rows, EntityManagerInterface $em): array
+    {
+        $index = [];
+        foreach ($rows as $row) {
+            $type = $this->normalizeType($row->getTypeMedia()) ?? $row->getTypeMedia();
+            $key = $this->key($this->decode(trim($row->getTitle())), $type);
+            if (isset($index[$key])) {
+                $em->remove($row);
+            } else {
+                $index[$key] = $row;
+            }
+        }
+
+        return $index;
+    }
+
+    private function key(string $title, string $type): string
+    {
+        return mb_strtolower($title) . '|' . $type;
     }
 
     private function normalizeType(mixed $type): ?string
