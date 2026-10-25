@@ -65,7 +65,11 @@ class BackupController extends AbstractController
 
             if (!empty($item['created_at'])) {
                 try {
-                    $media->setCreatedAt(new \DateTimeImmutable((string) $item['created_at']));
+                    $createdAt = new \DateTimeImmutable((string) $item['created_at']);
+                    // Doctrine sees a new date object as a change: only set it when the value differs.
+                    if (!$media->getId() || $media->getCreatedAt()->format('Y-m-d H:i:s') !== $createdAt->format('Y-m-d H:i:s')) {
+                        $media->setCreatedAt($createdAt);
+                    }
                 } catch (\Exception) {
                     // Keep the existing or default date when the backup date is invalid.
                 }
@@ -97,7 +101,10 @@ class BackupController extends AbstractController
 
             if (!empty($item['added_date'])) {
                 try {
-                    $watch->setAddedDate(new \DateTimeImmutable((string) $item['added_date']));
+                    $addedDate = new \DateTimeImmutable((string) $item['added_date']);
+                    if (!$watch->getId() || $watch->getAddedDate()->format('Y-m-d H:i:s') !== $addedDate->format('Y-m-d H:i:s')) {
+                        $watch->setAddedDate($addedDate);
+                    }
                 } catch (\Exception) {
                     // Keep the existing or default date when the backup date is invalid.
                 }
@@ -157,7 +164,8 @@ class BackupController extends AbstractController
         }
 
         $rating = (float) $rating;
-        return $rating >= 1 && $rating <= 5 ? (string) $rating : null;
+        // Same format as the DECIMAL(2,1) column ("4.0"), so unchanged ratings trigger no UPDATE.
+        return $rating >= 1 && $rating <= 5 ? number_format($rating, 1, '.', '') : null;
     }
 
     private function normalizeNullableString(mixed $value): ?string

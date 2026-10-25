@@ -16,6 +16,7 @@ export default function Profile() {
   const [suggestion, setSuggestion] = useState({type_message:'',message:''})
   const [newActu, setNewActu] = useState({titre:'',contenu:''})
   const [backupLoading, setBackupLoading] = useState(false)
+  const [importProgress, setImportProgress] = useState(null)
   const backupInput = useRef(null)
 
   useEffect(() => {
@@ -113,21 +114,44 @@ export default function Profile() {
     event.target.value = ''
     if (!file) return
 
+    let data
     try {
-      const data = JSON.parse(await file.text())
-      if (!Array.isArray(data.media) || !Array.isArray(data.watchlist)) throw new Error('invalid')
+      data = JSON.parse(await file.text())
+    } catch {
+      data = null
+    }
+    if (!Array.isArray(data?.media) || !Array.isArray(data?.watchlist)) {
+      setAlert({type:'error',message:'❌ Ce fichier JSON n’est pas une sauvegarde Cinetrack valide.'})
+      return
+    }
+
+    try {
       if (!confirm('Les éléments portant le même titre et le même type seront remplacés par les données du fichier. Continuer ?')) return
 
       setBackupLoading(true)
-      const result = await api.backup.import(data)
-      if (!result.success) throw new Error(result.error || 'import')
+      // Small batches keep each request under the Render gateway timeout.
+      const chunkSize = 50
+      let mediaImported = 0
+      let watchlistImported = 0
+      for (let start = 0; start < data.media.length || start === 0; start += chunkSize) {
+        setImportProgress(`${Math.min(start, data.media.length)}/${data.media.length}`)
+        const isLast = start + chunkSize >= data.media.length
+        const result = await api.backup.import({
+          media: data.media.slice(start, start + chunkSize),
+          watchlist: isLast ? data.watchlist : [],
+        })
+        if (!result.success) throw new Error(result.error || 'import')
+        mediaImported += result.media_imported
+        watchlistImported += result.watchlist_imported
+      }
       const refreshedProfile = await api.auth.profile()
       if (refreshedProfile.success) setProfile(refreshedProfile)
-      setAlert({type:'success',message:`✅ Import terminé : ${result.media_imported} médias et ${result.watchlist_imported} éléments à voir.`})
+      setAlert({type:'success',message:`✅ Import terminé : ${mediaImported} médias et ${watchlistImported} éléments à voir.`})
     } catch {
-      setAlert({type:'error',message:'❌ Ce fichier JSON n’est pas une sauvegarde Cinetrack valide.'})
+      setAlert({type:'error',message:'❌ L’import a échoué. Relancez-le : les éléments déjà importés ne seront pas dupliqués.'})
     } finally {
       setBackupLoading(false)
+      setImportProgress(null)
     }
   }
 
@@ -179,7 +203,7 @@ export default function Profile() {
           </button>
           <input ref={backupInput} type="file" accept="application/json,.json" onChange={handleImport} hidden />
           <button className="backup-import-button" onClick={() => backupInput.current?.click()} disabled={backupLoading}>
-            Importer un fichier JSON
+            {importProgress ? `Import en cours… ${importProgress}` : 'Importer un fichier JSON'}
           </button>
           <p className="backup-note">La sauvegarde est créée sur votre appareil et ne supprime aucune donnée de votre compte.</p>
         </div>
