@@ -716,3 +716,72 @@ button[type="submit"]:hover {
 
   .card-actions { flex-direction: column; }
 }
+
+/* Résultats de recherche TMDB (composant TmdbSearch, cartes <button>) */
+.search-results .result-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 0;
+  font: inherit;
+  color: #fff;
+  text-align: center;
+}
+
+.search-results .result-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  background: #222;
+  color: #777;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.search-results .result-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+}
+
+.search-results .result-item .title {
+  padding: 0;
+  min-height: 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.search-results .result-meta {
+  font-size: 11px;
+  color: #e50914;
+}
+
+.search-results .result-overview {
+  font-size: 11px;
+  line-height: 1.35;
+  color: #999;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.search-feedback {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  color: #bbb;
+  font-size: 14px;
+  text-align: center;
+}
+
+.search-feedback.search-error { border-color: #e50914; color: #ff6b6b; }
+
+@media (max-width: 600px) {
+  .search-results .result-placeholder { height: 155px; }
+}
