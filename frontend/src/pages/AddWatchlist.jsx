@@ -6,6 +6,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import TmdbSearch from '../components/TmdbSearch'
 import { useApi } from '../services/api'
+import { useKnownTitles, isKnown } from '../utils/knownTitles'
 
 export default function AddWatchlist() {
   const navigate = useNavigate()
@@ -15,6 +16,7 @@ export default function AddWatchlist() {
   const [searchVersion, setSearchVersion] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [msg, setMsg] = useState(null)
+  const known = useKnownTitles()
 
   const handleSelect = ({ title, imageUrl, type }) =>
     setForm(p => ({ ...p, title, image_url: imageUrl, type_media: type }))
@@ -24,6 +26,12 @@ export default function AddWatchlist() {
     if (!title) return setMsg({ type:'error', text:'Veuillez renseigner un titre' })
     if (items.some(item => item.title.toLocaleLowerCase() === title.toLocaleLowerCase() && item.type_media === form.type_media)) {
       return setMsg({ type:'error', text:'Ce média est déjà dans la sélection' })
+    }
+    if (isKnown([known.seen], { title, typeMedia:form.type_media })) {
+      return setMsg({ type:'error', text:'Vous avez déjà vu ce média' })
+    }
+    if (isKnown([known.toWatch], { title, typeMedia:form.type_media })) {
+      return setMsg({ type:'error', text:'Ce média est déjà dans votre liste à voir' })
     }
 
     setItems(previous => [...previous, { ...form, title }])
@@ -76,7 +84,7 @@ export default function AddWatchlist() {
       <div className="form-container" style={{ maxWidth: 860 }}>
         <h2>Ajouter un film ou une série à voir</h2>
         {msg?.type === 'error' && <div role="alert" style={{ background:'rgba(229,9,20,0.1)', border:'1px solid #e50914', color:'#e50914', padding:'12px 16px', borderRadius:8, marginBottom:20, fontSize:14 }}>{msg.text}</div>}
-        <TmdbSearch key={searchVersion} onSelect={handleSelect} />
+        <TmdbSearch key={searchVersion} onSelect={handleSelect} exclude={[known.seen, known.toWatch]} />
         <form onSubmit={handle}>
           <label>Titre du film ou de la série :</label>
           <input type="text" value={form.title} onChange={e => setForm(p => ({...p, title:e.target.value}))} placeholder="Entrez le titre du film" />

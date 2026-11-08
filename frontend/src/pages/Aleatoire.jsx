@@ -1,8 +1,9 @@
 import '../styles/aleatoire.css'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { useApi } from '../services/api'
+import { loadKnownTitles, isKnown, titleKey } from '../utils/knownTitles'
 
 const API_KEY = import.meta.env.VITE_TMDB_KEY || '22eef7e96585baa751a8384b942e4470'
 const GENRES = [
@@ -23,18 +24,22 @@ export default function Aleatoire() {
   const [addMsg, setAddMsg] = useState(null)
   const [addLoading, setAddLoading] = useState(false)
   const api = useApi()
+  // Chargé une seule fois ; le premier tirage attend la liste pour ne pas proposer un titre déjà vu.
+  const known = useRef(null)
+  if (!known.current) known.current = loadKnownTitles(api)
 
   const fetchRandom = async (f = filters) => {
     setLoading(true); setError(null); setMedia(null)
     try {
       let type = f.type
       if (f.duration && type === 'tous') type = 'film'
-      const page = Math.floor(Math.random() * 50) + 1
       let isMovie = type === 'série' ? false : type === 'film' ? true : Math.random() > 0.5
-      let ep = isMovie ? `https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&page=${page}` : `https://api.themoviedb.org/3/discover/tv?sort_by=popularity.desc&page=${page}`
+      let ep = isMovie ? 'https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc' : 'https://api.themoviedb.org/3/discover/tv?sort_by=popularity.desc'
       
       if (f.genre) ep += `&with_genres=${f.genre}`
-      if (f.year) ep += f.year === '2010' ? '&primary_release_date.lte=2010-12-31' : `&primary_release_year=${f.year}`
+      // Les séries n'ont pas de « release_date » chez TMDB mais une date de première diffusion.
+      if (f.year && isMovie) ep += f.year === '2010' ? '&primary_release_date.lte=2010-12-31' : `&primary_release_year=${f.year}`
+      if (f.year && !isMovie) ep += f.year === '2010' ? '&first_air_date.lte=2010-12-31' : `&first_air_date_year=${f.year}`
       if (f.duration && isMovie) {
         if (f.duration === 'lt90') ep += '&with_runtime.lte=89'
         else if (f.duration === 'gt20') ep += '&with_runtime.gte=20'
@@ -43,10 +48,22 @@ export default function Aleatoire() {
         else if (f.duration === 'gt120') ep += '&with_runtime.gte=121'
       }
       ep += `&api_key=${API_KEY}&language=fr-FR`
-      const res = await fetch(ep)
-      const data = await res.json()
-      if (!data.results?.length) { setError('Aucun résultat trouvé avec ces filtres.'); setLoading(false); return }
-      const pick = data.results[Math.floor(Math.random() * data.results.length)]
+      const { seen, toWatch } = await known.current
+      // Plusieurs pages au besoin : on écarte ce qui est déjà vu ou déjà dans la liste à voir.
+      let maxPage = 50
+      let candidates = []
+      for (let attempt = 0; attempt < 5 && !candidates.length; attempt++) {
+        const page = Math.floor(Math.random() * maxPage) + 1
+        const data = await fetch(`${ep}&page=${page}`).then(r => r.json())
+        if (data.total_pages) maxPage = Math.min(data.total_pages, 500)
+        candidates = (data.results || []).filter(r => !isKnown([seen, toWatch], {
+          title: r.title || r.name,
+          originalTitle: r.original_title || r.original_name,
+          typeMedia: isMovie ? 'film' : 'série',
+        }))
+      }
+      if (!candidates.length) { setError('Aucun nouveau titre trouvé avec ces filtres.'); setLoading(false); return }
+      const pick = candidates[Math.floor(Math.random() * candidates.length)]
       isMovie = !!pick.title
       const detail = await fetch(`https://api.themoviedb.org/3/${isMovie?'movie':'tv'}/${pick.id}?api_key=${API_KEY}&language=fr-FR`).then(r=>r.json())
       const runtime = isMovie ? detail.runtime || null : detail.episode_run_time?.[0] || null
@@ -70,7 +87,11 @@ export default function Aleatoire() {
     }
     try {
       const res = await api.watchlist.add(body)
-      if (res.success) setAddMsg('Ajouté à votre liste à voir !')
+      if (res.success) {
+        setAddMsg('Ajouté à votre liste à voir !')
+        const { toWatch } = await known.current
+        toWatch.add(titleKey(body.title, body.type_media))
+      }
       else setAddMsg(res.message || "Erreur lors de l'ajout.")
     } catch (e) {
       setAddMsg("Erreur lors de l'ajout : " + e.message)

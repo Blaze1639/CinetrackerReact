@@ -7,6 +7,7 @@ import Footer from '../components/Footer'
 import TmdbSearch from '../components/TmdbSearch'
 import StarRating from '../components/StarRating'
 import { useApi } from '../services/api'
+import { useKnownTitles } from '../utils/knownTitles'
 
 export default function AddMedia() {
   const navigate = useNavigate()
@@ -16,6 +17,7 @@ export default function AddMedia() {
   const [searchVersion, setSearchVersion] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [msg, setMsg] = useState(null)
+  const known = useKnownTitles()
 
   const handleSelect = ({ title, imageUrl, type }) =>
     setForm(p => ({ ...p, title, image_url: imageUrl, type_media: type }))
@@ -95,7 +97,7 @@ export default function AddMedia() {
       <div className="form-container" style={{ maxWidth: 860 }}>
         <h2>Ajouter un Film ou une Série</h2>
         {(msg?.type === 'error' || msg?.type === 'info') && <div role="alert" style={{ background:msg.type === 'error' ? 'rgba(229,9,20,0.1)' : 'rgba(255,255,255,0.08)', border:`1px solid ${msg.type === 'error' ? '#e50914' : '#777'}`, color:msg.type === 'error' ? '#e50914' : '#fff', padding:'12px 16px', borderRadius:8, marginBottom:20, fontSize:14 }}>{msg.text}</div>}
-        <TmdbSearch key={searchVersion} onSelect={handleSelect} />
+        <TmdbSearch key={searchVersion} onSelect={handleSelect} exclude={[known.seen]} />
         <form onSubmit={handle}>
           <label>Titre du Film ou de la Série :</label>
           <input type="text" value={form.title} onChange={e => setForm(p => ({...p, title:e.target.value}))} placeholder="Entrez le titre du film ou de la série" />

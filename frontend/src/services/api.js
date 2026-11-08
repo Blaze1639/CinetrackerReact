@@ -27,11 +27,12 @@ export function createApi(apiFetch) {
       import:   (body) => post('/api/backup/import', body),
     },
     tmdb: {
-      search: (query, options = {}) => get('/api/tmdb/search?' + new URLSearchParams({ query }), options),
+      search: (query, filters = {}, options = {}) => get('/api/tmdb/search?' + new URLSearchParams({ query, ...filters }), options),
     },
     media: {
       getAll:           (params = {}) => get('/api/media?' + new URLSearchParams(params)),
-      add:              (body)        => post('/api/media', body),
+      titles:           ()            => get('/api/media/titles'),
+      add:             (body)        => post('/api/media', body),
       update:           (body)        => put('/api/media/' + body.media_id, body),
       remove:           (id)          => del('/api/media/' + id),
       toggleFavorite:   (id)          => post('/api/media/' + id + '/favorite', {}),

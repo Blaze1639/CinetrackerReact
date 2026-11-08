@@ -46,6 +46,21 @@ class MediaController extends AbstractController
         ]);
     }
 
+    // Titres déjà vus / à voir, pour masquer ces médias dans les recherches et le tirage aléatoire.
+    #[Route('/titles', methods: ['GET'])]
+    public function titles(MediaRepository $mediaRepo, MediaToWatchRepository $watchRepo): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $toTitle = fn($m) => ['title' => $m->getTitle(), 'type_media' => $m->getTypeMedia()];
+
+        return $this->json([
+            'success'   => true,
+            'media'     => array_map($toTitle, $mediaRepo->findBy(['userId' => $user->getId()])),
+            'watchlist' => array_map($toTitle, $watchRepo->findBy(['userId' => $user->getId()])),
+        ]);
+    }
+
     #[Route('', methods: ['POST'])]
     public function add(Request $req, EntityManagerInterface $em, MediaRepository $mediaRepo, MediaToWatchRepository $watchRepo): JsonResponse
     {
